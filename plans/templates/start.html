@@ -1,0 +1,75 @@
+{#
+# Copyright 2015 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#}
+
+{# [START form] #}
+{% extends "base.html" %}
+
+{% block content %}
+<h4>Family Details</h4>
+<p>First, some details about you and your family</p>
+
+
+<form method="POST" enctype="multipart/form-data">
+  <div class="form-group row">
+    <label for="me" class="col-sm col-form-label bold-label">You</label>
+    <div class="col-sm">
+      <input type="text" name="me_age" id="me_age" placeholder="Age" value="{{family.me_age|default('')}}" class="form-control numerical-textfield"/>
+    </div>
+    <div class="col-sm form-group">
+      <div class="form-check form-check-inline">
+        <label class="form-check-label">
+          <input class="form-check-input" type="radio" name="me_gender" id="me_gender_inlineRadio1" value="male" {% if family.me_gender == 'male' %} checked {% endif %}> M
+        </label>
+      </div>
+      <div class="form-check form-check-inline">
+        <label class="form-check-label">
+          <input class="form-check-input" type="radio" name="me_gender" id="me_gender_inlineRadio2" value="female"  {% if family.me_gender == 'female' %} checked {% endif %}> F
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="spouse" class="col-sm col-form-label bold-label">Spouse</label>
+    <div class="col-sm">
+      <input type="text" name="spouse_age" id="spouse_age" placeholder="Age" value="{{family.spouse_age|default('')}}" class="form-control numerical-textfield"/>
+    </div>
+    <div class="col-sm form-group">
+      <div class="form-check form-check-inline">
+        <label class="form-check-label">
+          <input class="form-check-input" type="radio" name="spouse_gender" id="spouse_gender_inlineRadio1" value="male" {% if family.spouse_gender == 'male' %} checked {% endif %}> M
+        </label>
+      </div>
+      <div class="form-check form-check-inline">
+        <label class="form-check-label">
+          <input class="form-check-input" type="radio" name="spouse_gender" id="spouse_gender_inlineRadio2" value="female" {% if family.spouse_gender == 'female' %} checked {% endif %}> F
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="children" class="bold-label col-sm-4">How many children do you have</label>
+    <div class="col-sm-8">
+      <input type="text" name="children" id="children" value="{{family.children|default('')}}" class="form-control numerical-textfield"/>        
+    </div>
+  </div>
+  
+  {% if family %} <input type="hidden" name="id" value="{{family.key.id}}"/> {% endif %}
+  <button type="submit" name="save" class="btn btn-outline-success">Save</button>
+  <button type="submit" name="next" class="btn btn-primary">Next</button>
+</form>
+
+{% endblock %}
+{# [END form] #}

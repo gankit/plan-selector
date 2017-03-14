@@ -1,0 +1,7 @@
+indexes:
+
+- kind: Plan
+  properties:
+  - name: family_id
+  - name: created
+    direction: desc
