@@ -22,54 +22,128 @@
 <p>First, some details about you and your family</p>
 
 
-<form method="POST" enctype="multipart/form-data">
-  <div class="form-group row">
+<form method="POST" enctype="multipart/form-data" data-toggle="validator" role="form" id="input_form">
+  <div class="form-group row" id="you_details">
     <label for="me" class="col-sm col-form-label bold-label">You</label>
-    <div class="col-sm">
-      <input type="text" name="me_age" id="me_age" placeholder="Age" value="{{family.me_age|default('')}}" class="form-control numerical-textfield"/>
+    <div class="col-sm form-group">
+      <input type="text" name="me_age" id="me_age" placeholder="Age" value="{{family.me_age|default('')}}" class="form-control numerical-textfield" pattern="^[0-9]+$" data-pattern-error="Only numbers should be entered here." required/>
+      <div class="help-block with-errors form-control-feedback"></div>       
     </div>
     <div class="col-sm form-group">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="me_gender" id="me_gender_inlineRadio1" value="male" {% if family.me_gender == 'male' %} checked {% endif %}> M
+          <input class="form-check-input" type="radio" name="me_gender" id="me_gender_inlineRadio1" value="male" {% if family.me_gender == 'male' %} checked {% endif %} required> M
         </label>
       </div>
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="me_gender" id="me_gender_inlineRadio2" value="female"  {% if family.me_gender == 'female' %} checked {% endif %}> F
+          <input class="form-check-input" type="radio" name="me_gender" id="me_gender_inlineRadio2" value="female"  {% if family.me_gender == 'female' %} checked {% endif %} required> F
         </label>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>        
     </div>
   </div>
-  <div class="form-group row">
-    <label for="spouse" class="col-sm col-form-label bold-label">Spouse</label>
-    <div class="col-sm">
-      <input type="text" name="spouse_age" id="spouse_age" placeholder="Age" value="{{family.spouse_age|default('')}}" class="form-control numerical-textfield"/>
+
+  <div class="form-group row" id="num_children_details">
+    <label for="children" class="bold-label col-sm-4">How many children below the age 26 do you wish to cover?</label>
+    <div class="col-sm-8 orm-group">
+      <input type="text" name="children" id="children" value="{{family.children|default('0')}}" class="form-control numerical-textfield" pattern="^[0-9]+$" data-pattern-error="Only numbers should be entered here." required/>        
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
+  </div>
+
+ <div class="form-group row" id="marital_status_details">
+    <label for="marital_status" class="bold-label col-sm-4">Marital Status?</label>
     <div class="col-sm form-group">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="spouse_gender" id="spouse_gender_inlineRadio1" value="male" {% if family.spouse_gender == 'male' %} checked {% endif %}> M
+          <input class="form-check-input" type="radio" name="marital_status" id="marital_status_single_radio" value="single" {% if family.marital_status == 'single' %} checked {% endif %} required> Single
         </label>
       </div>
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="spouse_gender" id="spouse_gender_inlineRadio2" value="female" {% if family.spouse_gender == 'female' %} checked {% endif %}> F
+          <input class="form-check-input" type="radio" name="marital_status" id="marital_status_married_radio" value="married"  {% if family.marital_status == 'married' %} checked {% endif %} required> Married
         </label>
       </div>
-    </div>
+      <div class="help-block with-errors form-control-feedback"></div>        
+    </div>    
   </div>
-  <div class="form-group row">
-    <label for="children" class="bold-label col-sm-4">How many children do you have</label>
-    <div class="col-sm-8">
-      <input type="text" name="children" id="children" value="{{family.children|default('')}}" class="form-control numerical-textfield"/>        
-    </div>
-  </div>
-  
+
   {% if family %} <input type="hidden" name="id" value="{{family.key.id}}"/> {% endif %}
   <button type="submit" name="save" class="btn btn-outline-success">Save</button>
   <button type="submit" name="next" class="btn btn-primary">Next</button>
 </form>
 
+<div class="copy invisible">
+<!-- Prototype of a person. Name ... Age<textfield> Gender<Radio Buttons> -->
+  <div class="person_details_prototype form-group row">
+    <label id="person_details_prototype_title" class="col-sm col-form-label bold-label">Person</label>
+    <div class="col-sm form-group">
+      <input type="text" placeholder="Age" id="person_details_prototype_age" class="form-control numerical-textfield" pattern="^[0-9]+$" data-pattern-error="Only numbers should be entered here." required/>
+      <div class="help-block with-errors form-control-feedback"></div>       
+    </div>
+    <div class="col-sm form-group">
+      <div class="form-check form-check-inline">
+        <label class="form-check-label">
+          <input id="person_details_prototype_gender_male_radio" class="form-check-input" type="radio" value="male" required> M
+        </label>
+      </div>
+      <div class="form-check form-check-inline">
+        <label class="form-check-label">
+          <input id="person_details_prototype_gender_female_radio" class="form-check-input" type="radio" value="female" required> F
+        </label>
+      </div>
+      <div class="help-block with-errors form-control-feedback"></div>        
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+    $("#marital_status_single_radio").click(function(){ 
+        remove_spouse_section();
+    });
+
+    $("#marital_status_married_radio").click(function(){ 
+        add_spouse_section();
+    });
+
+    // unhide elements based on family variable
+    {% if family.marital_status == 'married' %} add_spouse_section() {% endif %}
+  });
+  
+  function add_spouse_section() {
+    var spouse_details_prototype = $(".person_details_prototype").clone();
+    spouse_details_prototype.removeClass('person_details_prototype');
+    spouse_details_prototype.attr('id', 'spouse_details');
+    var title = spouse_details_prototype.find("#person_details_prototype_title");
+    title.removeAttr('id');
+    title.text('Spouse');
+    var age = spouse_details_prototype.find("#person_details_prototype_age");
+    age.removeAttr('id');
+    age.attr('id', 'spouse_age')
+    age.attr('name', 'spouse_age')
+    age.attr('value', "{{family.spouse_age|default('')}}");
+    var male_radio = spouse_details_prototype.find("#person_details_prototype_gender_male_radio");
+    male_radio.removeAttr('id')
+    male_radio.attr('name', 'spouse_gender')
+    {% if family.spouse_gender == 'male' %} male_radio.attr('checked', true); {% endif %}
+    var female_radio = spouse_details_prototype.find("#person_details_prototype_gender_female_radio");
+    female_radio.removeAttr('id')
+    female_radio.attr('name', 'spouse_gender')
+    {% if family.spouse_gender == 'female' %} female_radio.attr('checked', true); {% endif %}
+
+
+    $("#marital_status_details").after(spouse_details_prototype);
+    $("#input_form").validator('update');
+  }
+
+  function remove_spouse_section() {
+    $("#spouse_details").remove();
+  }
+
+</script>
 {% endblock %}
 {# [END form] #}

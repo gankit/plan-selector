@@ -37,6 +37,7 @@ def start():
     if family_id:
         family_id = family_id.encode('utf-8')
     family = get_model().item('Family', id=family_id)
+    print(family)
     return render_template("start.html", family=family)
 
 # [END start]
