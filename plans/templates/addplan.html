@@ -18,26 +18,36 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h4>Potential Plan</h4>
+<h4>Enter plan information</h4>
 <form method="POST" enctype="multipart/form-data">
 
-  <div class="form-group row">
+  <div class="form-group row" id="plan_source_details">
     <label for="insurer_name" class="col-sm-4 col-form-label">Who is offering this plan?</label>
     <div class="col-sm-8 form-group">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="plan_source" id="planSourceRadioEmployer" value="employer" {% if plan.plan_source == 'employer' %} checked {% endif %}> Your Employer
+          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_employer_radio" value="employer" {% if plan.plan_source == 'employer' %} checked {% endif %}> Your Employer
         </label>
       </div>
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="plan_source" id="planSourceRadioSpouceEmployer" value="spouse_employer" {% if plan.plan_source == 'spouse_employer' %} checked {% endif %}> Your Spouse's Employer
+          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_spouse_employer_radio" value="spouse_employer" {% if plan.plan_source == 'spouse_employer' %} checked {% endif %}> Your Spouse's Employer
         </label>
       </div>
       <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="plan_source" id="planSourceRadioOther" value="other"  {% if plan.plan_source == 'other' %} checked {% endif %}> Other
+        <label class="form-check-label" style="display: inline-block;">
+          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_other_radio" value="other"  {% if plan.plan_source == 'other' %} checked {% endif %}> Other
         </label>
+        <div class="dropdown invisible" style="display: inline-block;" id="plan_source_other_dropdown">
+          <input type="hidden" id="plan_source_other" name="plan_source_other" value="{{plan.plan_source_other|default('Medicaid')}}" />
+          <button type="button" id="plan_source_other_button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{plan.plan_source_other|default('Medicaid')}}
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+          {% for other_plan in ['Medicaid', 'Medicaid Advantage'] %}
+            <a onclick="var val = this.text; $('#plan_source_other').val(val); $('#plan_source_other_button').text(val);" class="dropdown-item">{{other_plan}}</a>
+          {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -253,6 +263,32 @@
   <button type="submit" name="save" class="btn btn-outline-success">Save</button>
   <button type="submit" name="next" class="btn btn-primary">Next</button>
 </form>
+
+<div class="copy invisible">
+<!-- Prototype of a person. Name ... Age<textfield> Gender<Radio Buttons> -->
+</div>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+    $("input[type='radio'][name='plan_source']").click(function(){
+      show_or_hide_plan_source_other_dropdown()
+    });
+
+    show_or_hide_plan_source_other_dropdown();
+  });
+
+  function show_or_hide_plan_source_other_dropdown() {
+      var selected = $("input[type='radio'][name='plan_source']:checked");
+      if(selected.attr('id') === 'plan_source_other_radio') {
+        $("#plan_source_other_dropdown").removeClass('invisible');
+      }
+      else {
+        $("#plan_source_other_dropdown").addClass('invisible');
+      }    
+  }
+</script>
 
 {% endblock %}
 {# [END form] #}
