@@ -34,10 +34,17 @@ def start():
             return redirect(url_for('.addplan', family=family['id']))
 
     family_id = request.args.get('family', None)
+
+
     if family_id:
         family_id = family_id.encode('utf-8')
+
     family = get_model().item('Family', id=family_id)
-    print(family)
+
+    # Edge case when an incorrect family_id is supplied
+    if not family and family_id:
+        return redirect(url_for('.start'))
+
     return render_template("start.html", family=family)
 
 # [END start]
@@ -48,7 +55,13 @@ def plans():
     family_id = request.args.get('family', None)
     if family_id:
         family_id = family_id.encode('utf-8')
+
     plans, family = get_model().plans(family_id=family_id)
+
+    # Edge case when an incorrect family_id is supplied
+    if not family and family_id:
+        return redirect(url_for('.start'))
+
     return render_template(
         "plans.html",
         family=family,
@@ -82,10 +95,18 @@ def addplan():
         family_id = family_id.encode('utf-8')
     family = get_model().item('Family', id=family_id)
 
+    # Edge case when an incorrect family_id is supplied
+    if not family and family_id:
+        return redirect(url_for('.start'))
+
     plan_id = request.args.get('plan', None)
     if plan_id:
         plan_id = plan_id.encode('utf-8')
     plan = get_model().item('Plan', id=plan_id)
+
+    # Edge case when an incorrect plan_id is supplied
+    if not plan and plan_id:
+        return redirect(url_for('.plans', family=family_id))
 
     return render_template("addplan.html", family=family, plan=plan)
 # [END addplan]

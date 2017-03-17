@@ -26,7 +26,7 @@
   <div class="form-group row" id="you_details">
     <label for="me" class="col-sm col-form-label bold-label">You</label>
     <div class="col-sm form-group">
-      <input type="text" name="me_age" id="me_age" placeholder="Age" value="{{family.me_age|default('')}}" class="form-control numerical-textfield" pattern="^[0-9]+$" data-pattern-error="Only numbers should be entered here." required/>
+      <input type="text" name="me_age" id="me_age" placeholder="Age" value="{{family.me_age|default('')}}" class="form-control numerical-textfield" data-atleast="18" data-atleast-error="This has to be at least 18" pattern="^[0-9]+$" data-pattern-error="Only numbers should be entered here." required/>
       <div class="help-block with-errors form-control-feedback"></div>       
     </div>
     <div class="col-sm form-group">
@@ -79,7 +79,7 @@
   <div class="person_details_prototype form-group row">
     <label id="person_details_prototype_title" class="col-sm col-form-label bold-label">Person</label>
     <div class="col-sm form-group">
-      <input type="text" placeholder="Age" id="person_details_prototype_age" class="form-control numerical-textfield" pattern="^[0-9]+$" data-pattern-error="Only numbers should be entered here." required/>
+      <input type="text" placeholder="Age" id="person_details_prototype_age" class="form-control numerical-textfield"  data-atleast="18" data-atleast-error="This has to be at least 18" pattern="^[0-9]+$" data-pattern-error="Only numbers should be entered here." required/>
       <div class="help-block with-errors form-control-feedback"></div>       
     </div>
     <div class="col-sm form-group">
@@ -108,6 +108,15 @@
 
     $("#marital_status_married_radio").click(function(){ 
         add_spouse_section();
+    });
+
+    $("#input_form").validator({
+      custom: {
+        atleast: function($el) { 
+          var min = parseInt($el.data("atleast"));
+          return parseInt($el.val()) < min;
+        }
+      }
     });
 
     // unhide elements based on family variable
@@ -142,6 +151,7 @@
 
   function remove_spouse_section() {
     $("#spouse_details").remove();
+    $("#input_form").validator('update');
   }
 
 </script>

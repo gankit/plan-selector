@@ -19,24 +19,26 @@
 
 {% block content %}
 <h4>Enter plan information</h4>
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" data-toggle="validator" role="form" id="input_form">
 
   <div class="form-group row" id="plan_source_details">
     <label for="insurer_name" class="col-sm-4 col-form-label">Who is offering this plan?</label>
     <div class="col-sm-8 form-group">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_employer_radio" value="employer" {% if plan.plan_source == 'employer' %} checked {% endif %}> Your Employer
+          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_employer_radio" value="employer" {% if plan.plan_source == 'employer' %} checked {% endif %} required> Your Employer
         </label>
       </div>
+      {% if family.marital_status == 'married' %}
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_spouse_employer_radio" value="spouse_employer" {% if plan.plan_source == 'spouse_employer' %} checked {% endif %}> Your Spouse's Employer
+          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_spouse_employer_radio" value="spouse_employer" {% if plan.plan_source == 'spouse_employer' %} checked {% endif %} required> Your Spouse's Employer
         </label>
       </div>
+      {% endif %}
       <div class="form-check form-check-inline">
         <label class="form-check-label" style="display: inline-block;">
-          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_other_radio" value="other"  {% if plan.plan_source == 'other' %} checked {% endif %}> Other
+          <input class="form-check-input" type="radio" name="plan_source" id="plan_source_other_radio" value="other"  {% if plan.plan_source == 'other' %} checked {% endif %} required> Other
         </label>
         <div class="dropdown invisible" style="display: inline-block;" id="plan_source_other_dropdown">
           <input type="hidden" id="plan_source_other" name="plan_source_other" value="{{plan.plan_source_other|default('Medicaid')}}" />
@@ -49,53 +51,73 @@
           </div>
         </div>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>      
+    </div>
+  </div>
+
+  <div class="form-group row">
+    <label for="employer_name" class="col-sm-4 col-form-label">Employer Name</label>
+    <div class="col-sm-8 form-group">
+      <input type="text" name="employer_name" id="employer_name" value="{{plan.employer_name}}" class="form-control" required/>
+      <div class="help-block with-errors form-control-feedback"></div>      
     </div>
   </div>
 
   <div class="form-group row">
     <label for="plan_name" class="col-sm-4 col-form-label">Plan Name</label>
-    <div class="col-sm-8">
-      <input type="text" name="plan_name" id="plan_name" value="{{plan.plan_name}}" class="form-control"/>
+    <div class="col-sm-8 form-group">
+      <input type="text" name="plan_name" id="plan_name" value="{{plan.plan_name}}" class="form-control" required/>
+      <div class="help-block with-errors form-control-feedback"></div>      
     </div>
   </div>
 
   <div class="form-group row">
     <label for="insurer_name" class="col-sm-4 col-form-label">Insurer Name</label>
-    <div class="col-sm-8">
-      <input type="text" name="insurer_name" id="insurer_name" value="{{plan.insurer_name}}" class="form-control"/>
+    <div class="col-sm-8 form-group">
+      <input type="text" name="insurer_name" id="insurer_name" value="{{plan.insurer_name}}" class="form-control" required/>
+      <div class="help-block with-errors form-control-feedback"></div>      
     </div>
   </div>
 
   <div class="form-group row">
-    <label for="hsa_qualified" class="col-sm-4 col-form-label">HSA Qualified Plan?</label>
+    <div class="col-sm-4 form-group">
+      <label class="col-form-label">HSA Qualified Plan?</label>
+      <small id="hsa_qualified_help" class="form-text text-muted">Most plans with deductibles higher than $1300 for Employee only coverage and $2600 if other members are covered too. Typically designed as ‘HDHP’ or High Deductible Health Plan or ‘CDHP’ Consumer Directed Health Plan. Ask your HR team if it's not clear.</small>     
+    </div>
     <div class="col-sm-8 form-group">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="hsa_qualified" id="hsa_qualifiedRadioYes" value="yes" {% if plan.hsa_qualified == 'yes' %} checked {% endif %}> Yes
+          <input class="form-check-input" type="radio" name="hsa_qualified" id="hsa_qualified_yes_radio" value="yes" {% if plan.hsa_qualified == 'yes' %} checked {% endif %} required> Yes
         </label>
       </div>
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="hsa_qualified" id="hsa_qualifiedRadioNo" value="no" {% if plan.hsa_qualified == 'no' %} checked {% endif %}> No
+          <input class="form-check-input" type="radio" name="hsa_qualified" id="hsa_qualified_no_radio" value="no" {% if plan.hsa_qualified == 'no' %} checked {% endif %} required> No
         </label>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>       
+      <small id="hsa_qualified_tip" class="form-text text-muted green invisible">Great! HSA plans are typically better than others.</small>      
     </div>
   </div>
 
 
   <div class="form-group row">
-    <label for="oon_coverage_included" class="col-sm-4 col-form-label">Includes Out Of Network Coverage?</label>
+    <div class="col-sm-4">
+      <label for="oon_coverage_included" class="col-form-label">Includes Out Of Network Coverage?</label>
+      <small id="oon_coverage_included_help" class="form-text text-muted">These plans allow you to get healthcare outside of insurers preferred network. If you see values of an Out-Of-Network Deductible or Out-Of-Network Out-Of-Pocket Maximum, then the plan has Out-Of-Network Coverage. HMO (Health Maintenance Organizations) / EPO (Exclusive Provider Organizations) typically do NOT have Out-Of-Network Coverage. If you plan is labelled PPO (Preferred Provider Organization),  it likely includes Out-Of-Network Coverage.</small>     
+    </div>
     <div class="col-sm-8 form-group">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_includedRadioYes" value="yes" {% if plan.oon_coverage_included == 'yes' %} checked {% endif %}> Yes
+          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_includedRadioYes" value="yes" {% if plan.oon_coverage_included == 'yes' %} checked {% endif %} required> Yes
         </label>
       </div>
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_includedRadioNo" value="no" {% if plan.oon_coverage_included == 'no' %} checked {% endif %}> No
+          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_includedRadioNo" value="no" {% if plan.oon_coverage_included == 'no' %} checked {% endif %} required> No
         </label>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>       
     </div>
   </div>
   
@@ -103,9 +125,9 @@
   <div class="form-group row">
     <label class="col-sm-4 col-form-label h-center"></label>
     <label class="col-sm-2 col-form-label h-center">EE Only</label>
-    <label class="col-sm-2 col-form-label h-center">EE + Spouse</label>
-    <label class="col-sm-2 col-form-label h-center">EE + Child(ren)</label>
-    <label class="col-sm-2 col-form-label h-center">EE + Family</label>
+    {% if family.marital_status == 'married' %} <label class="col-sm-2 col-form-label h-center">EE + Spouse</label> {% endif %}
+    {% if family.children|int > 0 %} <label class="col-sm-2 col-form-label h-center">EE + Child(ren)</label> {% endif %}
+    {% if family.marital_status == 'married' and family.children|int > 0 %} <label class="col-sm-2 col-form-label h-center">EE + Family</label> {% endif %}
   </div>
 
   <div class="form-group row">
@@ -114,148 +136,204 @@
       <input type="hidden" id="ee_cost_cycle" name="ee_cost_cycle" value="{{plan.ee_cost_cycle|default('Monthly')}}" />
       <button type="button" id="ee_cost_cycle_button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{plan.ee_cost_cycle|default('Monthly')}}
       </button>
-      <div class="dropdown-menu dropdown-menu-right">
-        <a onclick="var val = this.text; $('#ee_cost_cycle').val(val); $('#ee_cost_cycle_button').text(val);" class="dropdown-item">Weekly</a>
-        <a onclick="var val = this.text; $('#ee_cost_cycle').val(val); $('#ee_cost_cycle_button').text(val);" class="dropdown-item">Monthly</a>
-        <a onclick="var val = this.text; $('#ee_cost_cycle').val(val); $('#ee_cost_cycle_button').text(val);" class="dropdown-item">Quarterly</a>
+      <div class="dropdown-menu">
+        {% for cycle in ['Weekly', 'Bi-Weekly (Twice a month)', 'Monthly', 'Semi-Anunally', 'Annually'] %}
+        <a onclick="var val = this.text; $('#ee_cost_cycle').val(val); $('#ee_cost_cycle_button').text(val);" class="dropdown-item">{{ cycle }}</a>
+        {% endfor %}
       </div>
     </div>    
+    <div class="col-sm-2 form-group">
+      <div class="input-group">
+        <span class="input-group-addon">$</span>
+        <input type="text" name="ee_cost" id="ee_cost" value="{{plan.ee_cost|default('')}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
+      </div>
+      <div class="help-block with-errors form-control-feedback"></div>
+    </div>
+{% if family.marital_status == 'married' %} 
     <div class="col-sm-2">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_cost" id="ee_cost" value="{{plan.ee_cost}}" class="form-control">
+        <input type="text" name="ee_spouse_cost" id="ee_spouse_cost" value="{{plan.ee_spouse_cost}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
+{% endif %}    
+{% if family.children|int > 0 %}
     <div class="col-sm-2">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_spouse_cost" id="ee_spouse_cost" value="{{plan.ee_spouse_cost}}" class="form-control">
+        <input type="text" name="ee_children_cost" id="ee_children_cost" value="{{plan.ee_children_cost}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
+{% endif %}    
+{% if family.marital_status == 'married' and family.children|int > 0 %}
     <div class="col-sm-2">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_children_cost" id="ee_children_cost" value="{{plan.ee_children_cost}}" class="form-control">
+        <input type="text" name="ee_family_cost" id="ee_family_cost" value="{{plan.ee_family_cost}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
-      <div class="input-group">
-        <span class="input-group-addon">$</span>
-        <input type="text" name="ee_family_cost" id="ee_family_cost" value="{{plan.ee_family_cost}}" class="form-control">
-      </div>
-    </div>
+{% endif %}    
   </div>
 
   <div class="form-group row">
-    <label class="col-sm-4 col-form-label">Deductible</label>
-    <div class="col-sm-2">
+    <label class="col-sm-4 col-form-label">In-Network Deductible</label>
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_deductible" id="ee_deductible" value="{{plan.ee_deductible}}" class="form-control">
+        <input type="text" name="ee_deductible" id="ee_deductible" value="{{plan.ee_deductible}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% if family.marital_status == 'married' %} 
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_spouse_deductible" id="ee_spouse_deductible" value="{{plan.ee_spouse_deductible}}" class="form-control">
+        <input type="text" name="ee_spouse_deductible" id="ee_spouse_deductible" value="{{plan.ee_spouse_deductible}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_children_deductible" id="ee_children_deductible" value="{{plan.ee_children_deductible}}" class="form-control">
+        <input type="text" name="ee_children_deductible" id="ee_children_deductible" value="{{plan.ee_children_deductible}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.marital_status == 'married' and family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_family_deductible" id="ee_family_deductible" value="{{plan.ee_family_deductible}}" class="form-control">
+        <input type="text" name="ee_family_deductible" id="ee_family_deductible" value="{{plan.ee_family_deductible}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
+{% endif %}    
   </div>
 
   <div class="form-group row">
-    <label class="col-sm-4 col-form-label">Out of pocket maximum</label>
-    <div class="col-sm-2">
+    <label class="col-sm-4 col-form-label">In-Network Out-Of-Pocket Maximum</label>
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_oop_max" id="ee_oop_max" value="{{plan.ee_oop_max}}" class="form-control">
+        <input type="text" name="ee_oop_max" id="ee_oop_max" value="{{plan.ee_oop_max}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% if family.marital_status == 'married' %} 
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_spouse_oop_max" id="ee_spouse_oop_max" value="{{plan.ee_spouse_oop_max}}" class="form-control">
+        <input type="text" name="ee_spouse_oop_max" id="ee_spouse_oop_max" value="{{plan.ee_spouse_oop_max}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_children_oop_max" id="ee_children_oop_max" value="{{plan.ee_children_oop_max}}" class="form-control">
+        <input type="text" name="ee_children_oop_max" id="ee_children_oop_max" value="{{plan.ee_children_oop_max}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.marital_status == 'married' and family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_family_oop_max" id="ee_family_oop_max" value="{{plan.ee_family_oop_max}}" class="form-control">
+        <input type="text" name="ee_family_oop_max" id="ee_family_oop_max" value="{{plan.ee_family_oop_max}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
+{% endif %}    
   </div>
 
   <div class="form-group row">
-    <label class="col-sm-4 col-form-label">ER funding into accounts</label>
-    <div class="col-sm-2">
+    <div class="col-sm-4">
+      <label class="col-form-label">Employer funding into savings accounts</label>
+      <small id="ee_er_funding_help" class="form-text text-muted">Employers often contribute dollars to HSA (Health Savings Account) or HRA (Health Reimbursement Account) to help employees meet some of their deductible / co-insurance expenses. This is an important factor to consider when selecting a health plan because your employer might only be contributing money if you pick certain plans. The details about these contributions can often be found inside your annual enrollment packet or an enrollment website.</small>
+    </div>
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_er_funding" id="ee_er_funding" value="{{plan.ee_er_funding}}" class="form-control">
+        <input type="text" name="ee_er_funding" id="ee_er_funding" value="{{plan.ee_er_funding}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% if family.marital_status == 'married' %} 
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_spouse_er_funding" id="ee_spouse_er_funding" value="{{plan.ee_spouse_er_funding}}" class="form-control">
+        <input type="text" name="ee_spouse_er_funding" id="ee_spouse_er_funding" value="{{plan.ee_spouse_er_funding}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_children_er_funding" id="ee_children_er_funding" value="{{plan.ee_children_er_funding}}" class="form-control">
+        <input type="text" name="ee_children_er_funding" id="ee_children_er_funding" value="{{plan.ee_children_er_funding}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.marital_status == 'married' and family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_family_er_funding" id="ee_family_er_funding" value="{{plan.ee_family_er_funding}}" class="form-control">
+        <input type="text" name="ee_family_er_funding" id="ee_family_er_funding" value="{{plan.ee_family_er_funding}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
+{% endif %}    
   </div>
 
   <div class="form-group row">
-    <label class="col-sm-4 col-form-label">Other wellness-type benefits</label>
-    <div class="col-sm-2">
+    <div class="col-sm-4">
+      <label class="col-form-label">Wellness / other bonuses or penalties</label>
+      <small id="ee_er_funding_help" class="form-text text-muted">Employers often setup programs for employees to meet certain goals and earn bonuses or avoid paying penalties. Some examples include getting an annual bio-metrics text, quitting smoking, or participating in weight loss programs. We will assume that you will earn a 100% of these bonuses and won't need to incur any penalties . These programs are almost always good for your well-being and save you some money. The details about these bonuses can often be found inside your annual enrollment packet or an enrollment website.</small>
+    </div>
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_wellness_benefits" id="ee_wellness_benefits" value="{{plan.ee_wellness_benefits}}" class="form-control">
+        <input type="text" name="ee_wellness_benefits" id="ee_wellness_benefits" value="{{plan.ee_wellness_benefits}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% if family.marital_status == 'married' %} 
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_spouse_wellness_benefits" id="ee_spouse_wellness_benefits" value="{{plan.ee_spouse_wellness_benefits}}" class="form-control">
+        <input type="text" name="ee_spouse_wellness_benefits" id="ee_spouse_wellness_benefits" value="{{plan.ee_spouse_wellness_benefits}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_children_wellness_benefits" id="ee_children_wellness_benefits" value="{{plan.ee_children_wellness_benefits}}" class="form-control">
+        <input type="text" name="ee_children_wellness_benefits" id="ee_children_wellness_benefits" value="{{plan.ee_children_wellness_benefits}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
-    <div class="col-sm-2">
+{% endif %}    
+{% if family.marital_status == 'married' and family.children|int > 0 %}
+    <div class="col-sm-2 form-group">
       <div class="input-group">
         <span class="input-group-addon">$</span>
-        <input type="text" name="ee_family_wellness_benefits" id="ee_family_wellness_benefits" value="{{plan.ee_family_wellness_benefits}}" class="form-control">
+        <input type="text" name="ee_family_wellness_benefits" id="ee_family_wellness_benefits" value="{{plan.ee_family_wellness_benefits}}" class="form-control" pattern="^[0-9]+\.?[0-9]*$" data-pattern-error="Please enter a valid $ value" data-required-error="Please fill this." required>
       </div>
+      <div class="help-block with-errors form-control-feedback"></div>
     </div>
+{% endif %}    
   </div>
 
   {% if family %} <input type="hidden" name="family_id" value="{{family.key.id}}"/> {% endif %}
@@ -276,7 +354,21 @@
       show_or_hide_plan_source_other_dropdown()
     });
 
+    $("input[type='radio'][name='hsa_qualified']").click(function(){
+      var selected = $("input[type='radio'][name='hsa_qualified']:checked");
+      if(selected.attr('id') === 'hsa_qualified_yes_radio') {
+        $("#hsa_qualified_tip").removeClass('invisible');
+      }
+      else {
+        $("#hsa_qualified_tip").addClass('invisible');
+      }    
+    });
+
     show_or_hide_plan_source_other_dropdown();
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+
   });
 
   function show_or_hide_plan_source_other_dropdown() {
