@@ -18,8 +18,12 @@ import logging
 
 
 crud = Blueprint('crud', __name__)
+# [START index]
+@crud.route("/")
+def index():
+    return render_template("index.html")
+# [END index]
 
-# [START start]
 @crud.route("/start", methods=['GET', 'POST'])
 def start():
     if request.method == 'POST':
