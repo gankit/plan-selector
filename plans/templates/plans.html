@@ -18,6 +18,7 @@
 
 {% block content %}
 
+<div class="container">
 <h3 class="d-inline-block">Plans</h3>
 <a href="/plans/addplan?family={{family.key.id}}" class="btn btn-success btn-sm d-inline-block">
   <i class="glyphicon glyphicon-plus"></i>
@@ -51,7 +52,7 @@
 {% for plan in plans %}
   <div class="row">
     <div class="col-4">
-      <h5>{{plan.plan_name}}</h5>
+      <h5><a href="/plans/{{plan.key.id}}">{{plan.plan_name}}</a></h5>
     </div>
     <div class="col-8"><svg class="plan_{{plan.key.id}}_details" width="500" height="100"></svg></div>
   </div>
@@ -198,4 +199,5 @@ function stackOffsetDiverging(series, order) {
 }
 
 </script>
+</div>
 {% endblock %}

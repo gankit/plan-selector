@@ -20,6 +20,10 @@ You can create and manage projects at https://console.developers.google.com
 
 import os
 
+# import sys
+# sys.path.insert(1, '/usr/local/google_appengine')
+# sys.path.insert(1, '/usr/local/google_appengine/lib/yaml/lib')
+
 # The secret key is used by Flask to encrypt session cookies.
 SECRET_KEY = 'secret'
 
