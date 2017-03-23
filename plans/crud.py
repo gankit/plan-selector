@@ -64,13 +64,31 @@ def plans():
     plans, family = get_model().plans(family_id=family_id)
 
     display_coverage_type = 'ee'
+    display_coverage_type_text = 'yourself'
     if family['marital_status'] == 'married':
         display_coverage_type = 'ee_spouse'
+        display_coverage_type_text = 'you and your spouse'
     if int(family['children']) > 0 :
         display_coverage_type = 'ee_children'
+        display_coverage_type_text = 'you and your children'
     if family['marital_status'] == 'married' and int(family['children']) > 0:
         display_coverage_type = 'ee_family'
+        display_coverage_type_text = 'you and your family'
 
+    plans_display_data = []
+    for plan in plans:
+        new_plan = {}
+        new_plan['plan_name'] = plan['plan_name']
+        plan_id = plan.key.id
+        new_plan['key'] = {'id':plan_id}
+        new_plan['cost_cycle'] = plan['ee_cost_cycle']
+        new_plan['hsa_qualified'] = plan['hsa_qualified']
+        new_plan['oon_coverage_included'] = plan['oon_coverage_included']
+        new_plan['cost'] = get_premiums(plan, [display_coverage_type])[display_coverage_type]
+        new_plan['deductible'] = get_deductibles(plan, [display_coverage_type])[display_coverage_type]
+        new_plan['oop_max'] = get_oop(plan, [display_coverage_type])[display_coverage_type]
+        new_plan['er_funding'] = get_er_fundings(plan, [display_coverage_type])[display_coverage_type]
+        plans_display_data.append(new_plan)
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.start'))
@@ -79,7 +97,9 @@ def plans():
         "plans.html",
         family=family,
         plans=plans,
-        display_coverage_type=display_coverage_type)
+        display_coverage_type=display_coverage_type,
+        display_coverage_type_text=display_coverage_type_text,
+        plans_display_data=plans_display_data)
 # [END plans]
 
 
@@ -118,11 +138,15 @@ def addplan():
         plan_id = plan_id.encode('utf-8')
     plan = get_model().item('Plan', id=plan_id)
 
+    medicaid_plans = ['Medicaid', 'Individual exchange', 'VA / Tricare']
+    if int(family['me_age']) >= 65 or ('spouse_age' in family and int(family['spouse_age']) >= 65):
+        medicaid_plans.append('Medicare / Medicare Advantage')
+
     # Edge case when an incorrect plan_id is supplied
     if not plan and plan_id:
         return redirect(url_for('.plans', family=family_id))
 
-    return render_template("addplan.html", family=family, plan=plan)
+    return render_template("addplan.html", family=family, plan=plan, medicaid_plans=medicaid_plans)
 # [END addplan]
 
 # [START recommendation]
@@ -376,7 +400,6 @@ def recommendation():
 
     # recommendation[text, plan, cost]
     # low_recomentation[text, cost, components=[recommendation]]
-    print(options)
     return render_template(
         "recommendation.html",
         family=family,
@@ -400,6 +423,21 @@ def expected_utilization(data, age, gender):
             break
     return utilization
 
+def get_premiums(plan, coverage_types):
+    premiums = {}
+    for coverage_type in coverage_types:
+        premium = 0
+        if coverage_type == 'ee':
+            premium = float(plan['ee_cost'])
+        elif coverage_type == 'ee_spouse':
+            premium = float(plan['ee_spouse_cost'])
+        elif coverage_type == 'ee_children':
+            premium = float(plan['ee_children_cost'])
+        elif coverage_type == 'ee_family':
+            premium = float(plan['ee_family_cost'])
+        premiums[coverage_type] = premium
+    return premiums
+
 def get_annual_premiums(plan, coverage_types):
     premiums = {}
     for coverage_type in coverage_types:
@@ -415,7 +453,9 @@ def get_annual_premiums(plan, coverage_types):
         cycle = plan['ee_cost_cycle']
         if cycle == "Weekly":
             premium *= 52
-        elif cycle == "Bi-Weekly (Twice a month)":
+        elif cycle == "Bi-Weekly (Twice a week)":
+            premium *= 104
+        elif cycle == "Bi-Monthly":
             premium *= 26
         if cycle == "Monthly":
             premium *= 12
@@ -507,7 +547,6 @@ def get_human_readable_split(coverage_type, is_spouse=False):
             return "you and your family"
 
 def get_plan_by_id(plans, plan_id):
-    print(plans)
     for p in plans:
         if str(p.key.id) == plan_id:
             return p

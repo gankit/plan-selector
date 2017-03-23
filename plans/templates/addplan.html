@@ -46,13 +46,14 @@
           <button type="button" id="plan_source_other_button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{plan.plan_source_other|default('Medicaid')}}
           </button>
           <div class="dropdown-menu dropdown-menu-right">
-          {% for other_plan in ['Medicaid', 'Medicaid Advantage'] %}
-            <a onclick="var val = this.text; $('#plan_source_other').val(val); $('#plan_source_other_button').text(val);" class="dropdown-item">{{other_plan}}</a>
+          {% for other_plan in medicaid_plans %}
+            <a class="dropdown-item plan_source_other_item">{{other_plan}}</a>
           {% endfor %}
           </div>
         </div>
       </div>
       <div class="help-block with-errors form-control-feedback"></div>      
+      <small id="plan_source_other_warning_tip" class="form-text text-muted text-danger {% if plan.plan_source == 'other' %} hidden-xl-down {% endif %}">We currently doesn't support plan optimization for Medicaid plans. Please consult someone else for this decision.</small>
     </div>
   </div>
 
@@ -97,7 +98,7 @@
         </label>
       </div>
       <div class="help-block with-errors form-control-feedback"></div>       
-      <small id="hsa_qualified_tip" class="form-text text-muted green invisible">Great! HSA plans are typically better than others.</small>      
+      <small id="hsa_qualified_tip" class="form-text text-muted green invisible">Great! HSAs are a superior way to stash away pre-tax dollars for the future. You don't lose unused funds at the end of the year.</small>      
     </div>
   </div>
 
@@ -110,15 +111,16 @@
     <div class="col-sm-8 form-group">
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_includedRadioYes" value="yes" {% if plan.oon_coverage_included == 'yes' %} checked {% endif %} required> Yes
+          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_included_yes" value="yes" {% if plan.oon_coverage_included == 'yes' %} checked {% endif %} required> Yes
         </label>
       </div>
       <div class="form-check form-check-inline">
         <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_includedRadioNo" value="no" {% if plan.oon_coverage_included == 'no' %} checked {% endif %} required> No
+          <input class="form-check-input" type="radio" name="oon_coverage_included" id="oon_coverage_included_no" value="no" {% if plan.oon_coverage_included == 'no' %} checked {% endif %} required> No
         </label>
       </div>
       <div class="help-block with-errors form-control-feedback"></div>       
+      <small id="oon_coverage_tip" class="form-text text-muted green invisible">Don't forget to check if you healthcare providers (doctors, hospitals) are in this plan's network, if you end up picking it.</small>      
     </div>
   </div>
   
@@ -134,11 +136,11 @@
   <div class="form-group row">
     <label class="col-sm-2 col-form-label">Cost</label>
     <div class="dropdown col-sm-2">
-      <input type="hidden" id="ee_cost_cycle" name="ee_cost_cycle" value="{{plan.ee_cost_cycle|default('Monthly')}}" />
-      <button type="button" id="ee_cost_cycle_button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{plan.ee_cost_cycle|default('Monthly')}}
+      <input type="hidden" id="ee_cost_cycle" name="ee_cost_cycle" value="{{plan.ee_cost_cycle|default('Bi-Monthly')}}" />
+      <button type="button" id="ee_cost_cycle_button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{plan.ee_cost_cycle|default('Bi-Monthly')}}
       </button>
       <div class="dropdown-menu">
-        {% for cycle in ['Weekly', 'Bi-Weekly (Twice a month)', 'Monthly', 'Semi-Anunally', 'Annually'] %}
+        {% for cycle in ['Bi-Weekly (Twice a week)', 'Weekly', 'Bi-Monthly', 'Monthly', 'Annually'] %}
         <a onclick="var val = this.text; $('#ee_cost_cycle').val(val); $('#ee_cost_cycle_button').text(val);" class="dropdown-item">{{ cycle }}</a>
         {% endfor %}
       </div>
@@ -365,10 +367,44 @@
       }    
     });
 
+    $("input[type='radio'][name='oon_coverage_included']").click(function(){
+      var selected = $("input[type='radio'][name='oon_coverage_included']:checked");
+      if(selected.attr('id') === 'oon_coverage_included_no') {
+        $("#oon_coverage_tip").removeClass('invisible');
+      }
+      else {
+        $("#oon_coverage_tip").addClass('invisible');
+      }    
+    });
+
+
     show_or_hide_plan_source_other_dropdown();
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
     })
+
+    $(".plan_source_other_item").click(function(){
+      var val = this.text; 
+      $('#plan_source_other').val(val); 
+      $('#plan_source_other_button').text(val);
+      $("#plan_source_other_warning_tip").removeClass('hidden-xl-down');
+      update_plan_source_other_warning()
+    });
+
+    {% if plan.plan_source == 'other' %} update_plan_source_other_warning() {% endif %}
+
+    $("#input_form").validator({
+      custom: {
+        atleast: function($el) { 
+          var min = parseInt($el.data("atleast"));
+          return parseInt($el.val()) < min;
+        },
+        notequals: function($el) {
+          var matchValue = $el.data("notequals")
+          return ($el.val() === matchValue);
+        }
+      }
+    });
 
   });
 
@@ -376,10 +412,23 @@
       var selected = $("input[type='radio'][name='plan_source']:checked");
       if(selected.attr('id') === 'plan_source_other_radio') {
         $("#plan_source_other_dropdown").removeClass('invisible');
+        $("#plan_source_other_warning_tip").removeClass('hidden-xl-down');
       }
       else {
         $("#plan_source_other_dropdown").addClass('invisible');
+        $("#plan_source_other_warning_tip").addClass('hidden-xl-down');
       }    
+  }
+
+  function update_plan_source_other_warning() {
+    var selected_source = $('#plan_source_other').val(); 
+    var tips = {
+      'Medicaid':'We currently don\'t support plan optimization for Medicaid plans. Please consult someone else for this decision.', 
+      'Individual exchange':'We recommend that you do not consider these plans if you have access to affordable coverage through an employer. You usually pay for Individual exchange plans with post-tax dollars vs. being able to use pre-tax dollars for plans through an employer. This along with better pricing available to employers make employer plans a superior option.', 
+      'VA / Tricare':'We currently don\'t support plan optimization for VA / Tricare plans. Please consult someone else for this decision.',
+      'Medicare / Medicare Advantage':'We currently don\'t support plan optimization for Medicare / Medicare Advantage plans. Please consult someone else for this decision.'
+    }
+    $("#plan_source_other_warning_tip").text(tips[selected_source])
   }
 </script>
 </div>

@@ -16,12 +16,11 @@
 
 {# [START form] #}
 {% extends "base.html" %}
+{% set active_page = "recommendation" %}
 
 {% block content %}
 <div class="container">
-<div class="row">
-<h3 class="col">Plan Recommendation</h3>
-</div>
+<h1 class="display-4">Our Recommendation</h1>
 <div class="row">
 <p class="col">We are looking for the best plan combination that covers you{% if family.marital_status == 'married' %}, your spouse {% endif %} {% if family.children|int > 0 %} and your children {% endif %}</p>
 </div>
