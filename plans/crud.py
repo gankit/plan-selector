@@ -434,14 +434,15 @@ def get_premiums(plan, coverage_types):
     premiums = {}
     for coverage_type in coverage_types:
         premium = 0
-        if coverage_type == 'ee':
-            premium = float(plan['ee_cost'])
-        elif coverage_type == 'ee_spouse':
-            premium = float(plan['ee_spouse_cost'])
-        elif coverage_type == 'ee_children':
-            premium = float(plan['ee_children_cost'])
-        elif coverage_type == 'ee_family':
-            premium = float(plan['ee_family_cost'])
+        if coverage_type + '_cost' in plan:
+            if coverage_type == 'ee':
+                premium = float(plan['ee_cost'])
+            elif coverage_type == 'ee_spouse':
+                premium = float(plan['ee_spouse_cost'])
+            elif coverage_type == 'ee_children':
+                premium = float(plan['ee_children_cost'])
+            elif coverage_type == 'ee_family':
+                premium = float(plan['ee_family_cost'])
         premiums[coverage_type] = premium
     return premiums
 
@@ -449,14 +450,15 @@ def get_annual_premiums(plan, coverage_types):
     premiums = {}
     for coverage_type in coverage_types:
         premium = 0
-        if coverage_type == 'ee':
-            premium = float(plan['ee_cost'])
-        elif coverage_type == 'ee_spouse':
-            premium = float(plan['ee_spouse_cost'])
-        elif coverage_type == 'ee_children':
-            premium = float(plan['ee_children_cost'])
-        elif coverage_type == 'ee_family':
-            premium = float(plan['ee_family_cost'])
+        if coverage_type + '_cost' in plan:
+            if coverage_type == 'ee':
+                premium = float(plan['ee_cost'])
+            elif coverage_type == 'ee_spouse':
+                premium = float(plan['ee_spouse_cost'])
+            elif coverage_type == 'ee_children':
+                premium = float(plan['ee_children_cost'])
+            elif coverage_type == 'ee_family':
+                premium = float(plan['ee_family_cost'])
         cycle = plan['ee_cost_cycle']
         if cycle == "Weekly":
             premium *= 52
@@ -475,14 +477,15 @@ def get_deductibles(plan, coverage_types):
     deductibles = {}
     for coverage_type in coverage_types:
         deductible = 0
-        if coverage_type == 'ee':
-            deductible = float(plan['ee_deductible'])
-        elif coverage_type == 'ee_spouse':
-            deductible = float(plan['ee_spouse_deductible'])
-        elif coverage_type == 'ee_children':
-            deductible = float(plan['ee_children_deductible'])
-        elif coverage_type == 'ee_family':
-            deductible = float(plan['ee_family_deductible'])
+        if coverage_type + '_deductible' in plan:
+            if coverage_type == 'ee':
+                deductible = float(plan['ee_deductible'])
+            elif coverage_type == 'ee_spouse':
+                deductible = float(plan['ee_spouse_deductible'])
+            elif coverage_type == 'ee_children':
+                deductible = float(plan['ee_children_deductible'])
+            elif coverage_type == 'ee_family':
+                deductible = float(plan['ee_family_deductible'])
         deductibles[coverage_type] = deductible
     return deductibles
 
@@ -490,14 +493,15 @@ def get_oop(plan, coverage_types):
     oops = {}
     for coverage_type in coverage_types:
         oop = 0
-        if coverage_type == 'ee':
-            oop = float(plan['ee_oop_max'])
-        elif coverage_type == 'ee_spouse':
-            oop = float(plan['ee_spouse_oop_max'])
-        elif coverage_type == 'ee_children':
-            oop = float(plan['ee_children_oop_max'])
-        elif coverage_type == 'ee_family':
-            oop = float(plan['ee_family_oop_max'])
+        if coverage_type + '_oop_max' in plan:
+            if coverage_type == 'ee':
+                oop = float(plan['ee_oop_max'])
+            elif coverage_type == 'ee_spouse':
+                oop = float(plan['ee_spouse_oop_max'])
+            elif coverage_type == 'ee_children':
+                oop = float(plan['ee_children_oop_max'])
+            elif coverage_type == 'ee_family':
+                oop = float(plan['ee_family_oop_max'])
         oops[coverage_type] = oop
     return oops
 
@@ -505,14 +509,15 @@ def get_er_fundings(plan, coverage_types):
     er_fundings = {}
     for coverage_type in coverage_types:
         er_funding = 0
-        if coverage_type == 'ee':
-            er_funding = float(plan['ee_er_funding'])
-        elif coverage_type == 'ee_spouse':
-            er_funding = float(plan['ee_spouse_er_funding'])
-        elif coverage_type == 'ee_children':
-            er_funding = float(plan['ee_children_er_funding'])
-        elif coverage_type == 'ee_family':
-            er_funding = float(plan['ee_family_er_funding'])
+        if coverage_type + '_er_funding' in plan:
+            if coverage_type == 'ee':
+                er_funding = float(plan['ee_er_funding'])
+            elif coverage_type == 'ee_spouse':
+                er_funding = float(plan['ee_spouse_er_funding'])
+            elif coverage_type == 'ee_children':
+                er_funding = float(plan['ee_children_er_funding'])
+            elif coverage_type == 'ee_family':
+                er_funding = float(plan['ee_family_er_funding'])
         er_fundings[coverage_type] = er_funding
     return er_fundings
 
@@ -520,14 +525,15 @@ def get_wellness_benefits(plan, coverage_types):
     wellness_benefitss = {}
     for coverage_type in coverage_types:
         wellness_benefits = 0
-        if coverage_type == 'ee':
-            wellness_benefits = float(plan['ee_wellness_benefits'])
-        elif coverage_type == 'ee_spouse':
-            wellness_benefits = float(plan['ee_spouse_wellness_benefits'])
-        elif coverage_type == 'ee_children':
-            wellness_benefits = float(plan['ee_children_wellness_benefits'])
-        elif coverage_type == 'ee_family':
-            wellness_benefits = float(plan['ee_family_wellness_benefits'])
+        if coverage_type + '_wellness_benefits' in plan:
+            if coverage_type == 'ee':
+                wellness_benefits = float(plan['ee_wellness_benefits'])
+            elif coverage_type == 'ee_spouse':
+                wellness_benefits = float(plan['ee_spouse_wellness_benefits'])
+            elif coverage_type == 'ee_children':
+                wellness_benefits = float(plan['ee_children_wellness_benefits'])
+            elif coverage_type == 'ee_family':
+                wellness_benefits = float(plan['ee_family_wellness_benefits'])
         wellness_benefitss[coverage_type] = wellness_benefits
     return wellness_benefitss
 
