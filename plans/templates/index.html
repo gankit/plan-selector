@@ -38,65 +38,63 @@
         </div>
     </div>
 </nav>
-<div class="jumbotron jumbotron-fluid" id="first">
-  <div class="container">
-    <h1 class="display-3">Picking a health plan can be complicated</h1>
-    <p class="lead">This tool can help you pick the best health plan that saves you money and is optimized for your entire family.</p>
-<!--     <hr class="my-4">
-    <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
- -->    <p class="lead">
-      <a class="btn btn-primary btn-lg" href="start{% if family %}?family={{family.key.id}} {% endif %}" role="button">Get started</a>
-    </p>
-  </div>
+
+<div class="jumbotron" id="first">
+<div class="container">
+  <h1 class="display-4">Picking a health plan can be complicated</h1>
+  <p class="lead">We are here to help</p>
+  <hr class="my-4">
+  <p>We help you select the right health plan for you and your family - the one that saves money and
+provides appropriate coverage. We are especially good at helping you optimize your plan choices when you have access to
+coverage through multiple sources e.g. you and your spouse's employers.</p>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg" href="start{% if family %}?family={{family.key.id}} {% endif %}" role="button">Get started</a>
+  </p>
+</div>
 </div>
 <section id="one">
     <div class="container wow fadeInUp">
         <div class="row">
             <div class="col-lg-4 col-md-4 text-center">
                 <div class="feature">
-                    <i class="icon-lg ion-ios-grid-view-outline wow fadeIn" data-wow-delay=".1s"></i>
-                    <h6 class="text-uppercase">Easier</h6>
-                    <p class="text-muted m-b-0">Flexbox provides <a href="http://v4-alpha.getbootstrap.com/getting-started/flexbox">simpler, more flexible layout</a> options like vertical centering.</p>
+                    <h5 class="text-uppercase">Robust</h5>
+                    <p class="text-muted m-b-0">We factor in expected healthcare costs, all available sources of insurance and plans to personalize a plan recommendation for you.</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 text-center">
                 <div class="feature">
-                    <i class="icon-lg ion-social-sass wow fadeInUp"></i>
-                    <h6 class="text-uppercase">Sass-y</h6>
-                    <p class="text-muted m-b-0">Flexbox is now the default and Bootstrap 4 supports SASS out of the box.</p>
+                    <h5 class="text-uppercase">Simple</h5>
+                    <p class="text-muted m-b-0">While health insurance is full of jargon, we simplify the process by asking you a few easy questions and demystify all the jargon along the way</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 text-center">
                 <div class="feature">
-                    <i class="icon-lg ion-social-css3-outline wow fadeIn" data-wow-delay=".1s"></i>
-                    <h6 class="text-uppercase">It's Modern</h6>
-                    <p class="text-muted m-b-0">Introduced in CSS3, flexbox won't work in older browsers like <a href="http://caniuse.com/#feat=flexbox">IE9</a>.</p>
+                    <h5 class="text-uppercase">Fast</h5>
+                    <p class="text-muted m-b-0">If you start with all the right information, you should be able to finish this in under 30 mins and save 100s of dollars (often 1000s). We think that’s time well spent.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 <section id="two">
-<div id="myCarousel" class="carousel slide" data-ride="carousel">
+<div id="myCarousel" class="carousel slide bg-info" data-ride="carousel">
       <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
         <li data-target="#myCarousel" data-slide-to="1"></li>
         <li data-target="#myCarousel" data-slide-to="2"></li>
       </ol>
       <div class="carousel-inner" role="listbox">
-        <div class="carousel-item active">
-          <img class="first-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="First slide">
+        <div class="carousel-item active bg-info">
           <div class="container">
             <div class="carousel-caption d-none d-md-block">
             <blockquote class="blockquote">
-              <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-              <footer class="blockquote-footer">Someone famous in <cite title="Source Title">Source Title</cite></footer>
+              <p class="mb-0">Love this site. Saved me lots of time and money. Worth the effort.</p>
+              <footer class="blockquote-footer">Johnny Appleseed from <cite title="Source Title">Google Inc.</cite></footer>
             </blockquote>
             </div>
           </div>
         </div>
-        <div class="carousel-item">
-          <img class="second-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+<!--         <div class="carousel-item bg-info">
           <div class="container">
             <div class="carousel-caption d-none d-md-block">
               <h1>Another example headline.</h1>
@@ -105,8 +103,7 @@
             </div>
           </div>
         </div>
-        <div class="carousel-item">
-          <img class="third-slide" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Third slide">
+        <div class="carousel-item bg-info">
           <div class="container">
             <div class="carousel-caption d-none d-md-block text-right">
               <h1>One more for good measure.</h1>
@@ -115,7 +112,7 @@
             </div>
           </div>
         </div>
-      </div>
+ -->      </div>
       <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
@@ -127,19 +124,18 @@
     </div>
 
 </section>
-<footer id="footer">
+<footer id="footer" class="bg-inverse">
     <div class="container">
         <div class="row">
-            <div class="col-6 col-sm-3 column">
+            <div class="col-4 col-sm-4 column">
                 <h6 class="text-uppercase">About</h6>
                 <ul class="list-unstyled">
                     <li><a href="#" data-toggle="modal" data-target="#alertModal" >Contact Us</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#alertModal" >Delivery Information</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#alertModal" >Privacy Policy</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#alertModal" >Terms &amp; Conditions</a></li>
                 </ul>
             </div>
-            <div class="col-12 col-sm-3 column">
+            <div class="col-4 col-sm-4 column">
                 <h6 class="text-uppercase">Stay Posted</h6>
                 <form>
                     <div class="form-group">
@@ -150,8 +146,8 @@
                     </div>
                 </form>
             </div>
-            <div class="col-12 col-sm-3 text-xs-right">
-                <h6 class="text-uppercase">Follow</h6>
+            <div class="col-4 col-sm-3 text-xs-right">
+                <h6 class="text-uppercase">Give us some love.</h6>
                 <ul class="list-inline">
                     <li class="list-inline-item"><a rel="nofollow" href="" title="Twitter"><i class="icon-lg ion-social-twitter-outline"></i></a>&nbsp;</li>
                     <li class="list-inline-item"><a rel="nofollow" href="" title="Facebook"><i class="icon-lg ion-social-facebook-outline"></i></a></li>

@@ -21,9 +21,7 @@
 {% block content %}
 <div class="container">
 <h1 class="display-4">Our Recommendation</h1>
-<div class="row">
-<p class="col">We are looking for the best plan combination that covers you{% if family.marital_status == 'married' %}, your spouse {% endif %} {% if family.children|int > 0 %} and your children {% endif %}</p>
-</div>
+ <p class="lead">We are looking for the best plan combination that covers you{% if family.marital_status == 'married' and family.children|int > 0 %}, your spouse and your children{% elif family.marital_status == 'married' %} and your spouse{% elif family.children|int > 0 %} and your children{% endif %}.</p>
 <br>
 <div class="row">
 	<div class="col-6"><h4>What is your expected utilization?</h4></div>
@@ -45,12 +43,12 @@
 		</label>
 	</div>
 </div>
-<div class="row options-row hidden-xl-down">
-<h4 class="col">Top options</h4>
+<br>
+<div class="options-row hidden-xl-down">
+<h4>Your best options</h4>
 </div>
 {% for util in ['low', 'med', 'high'] %}
-<div class="row options options-{{util}} hidden-xl-down">
-<div class="col">
+<div class="options options-{{util}} hidden-xl-down">
 <table class="table table-hover options-table">
   <thead>
     <tr>
@@ -70,14 +68,14 @@
   </tbody>
 </table>
 </div>
-</div>
+<br>
 {% endfor %}
-<div class="row rec-row hidden-xl-down">
-<h4 class="col">Our Recommendation</h4>
+<div class="rec-row hidden-xl-down">
+<h4>Our Recommendation</h4>
 </div>
 {% for util in ['low', 'med', 'high'] %}
-<div class="row recommendation-text recommendation-text-{{util}} hidden-xl-down">
-<div class="col">{{recommendation[util].text}}</div>
+<div class="recommendation-text recommendation-text-{{util}} hidden-xl-down">
+<p>{{recommendation[util].text}}</p>
 </div>
 {% endfor %}
 </div>
