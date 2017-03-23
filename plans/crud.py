@@ -63,6 +63,14 @@ def plans():
 
     plans, family = get_model().plans(family_id=family_id)
 
+    display_coverage_type = 'ee'
+    if family['marital_status'] == 'married':
+        display_coverage_type = 'ee_spouse'
+    if int(family['children']) > 0 :
+        display_coverage_type = 'ee_children'
+    if family['marital_status'] == 'married' and int(family['children']) > 0:
+        display_coverage_type = 'ee_family'
+
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.start'))
@@ -70,7 +78,8 @@ def plans():
     return render_template(
         "plans.html",
         family=family,
-        plans=plans)
+        plans=plans,
+        display_coverage_type=display_coverage_type)
 # [END plans]
 
 
@@ -140,7 +149,7 @@ def recommendation():
         coverage_types.append('ee_children')
     if family['marital_status'] == 'married' and int(family['children']) > 0:
         coverage_types.append('ee_family')
-    print(coverage_types)
+    # print(coverage_types)
     with urllib.request.urlopen(url) as response:
         obj = response.read().decode('utf8')
         data = json.loads(obj)
@@ -148,13 +157,24 @@ def recommendation():
         me_employer = None
         spouse_employer = None
         # print(comparison_dataset)
+        price = {}
         for plan in plans:
             plan_id = str(plan.key.id)
+            if plan_id not in price:
+                price[plan_id] = {}
             premiums = get_annual_premiums(plan=plan, coverage_types=coverage_types)
             deductibles = get_deductibles(plan=plan, coverage_types=coverage_types)
             oops = get_oop(plan=plan, coverage_types=coverage_types)
             er_fundings = get_er_fundings(plan=plan, coverage_types=coverage_types)
             wellness_benefits = get_wellness_benefits(plan=plan, coverage_types=coverage_types)
+            for coverage_type in coverage_types:
+                price[plan_id][coverage_type] = premiums[coverage_type] - er_fundings[coverage_type] - wellness_benefits[coverage_type]
+        for plan in plans:
+            plan_id = str(plan.key.id)
+            if plan_id not in price:
+                price[plan_id] = {}
+            deductibles = get_deductibles(plan=plan, coverage_types=coverage_types)
+            oops = get_oop(plan=plan, coverage_types=coverage_types)
             employer = plan['employer_name']
             if plan['plan_source'] == 'employer':
                 me_employer = employer
@@ -205,16 +225,13 @@ def recommendation():
                     cost = 0
                     eu = utilization[util]
                     xyz = 0
-                    premium = premiums[coverage_type]
                     oop = oops[coverage_type]
                     deductible = deductibles[coverage_type]
-                    er_funding = er_fundings[coverage_type]
-                    wellness_benefit = wellness_benefits[coverage_type]
                     if eu < deductible:
                         xyz = eu
                     else:
                         xyz = min(deductible + 0.2 * (eu - deductible), oop)
-                    cost = premium + xyz - er_funding - wellness_benefit
+                    cost = price[plan_id][coverage_type] + xyz
                     comparison_table[employer][coverage_type][plan_id][util] = cost
 
         # print(comparison_table)
@@ -233,8 +250,6 @@ def recommendation():
                             best_plans[util][coverage_type][employer] = plan_id
 
         # print(best_plans)
-        print(me_employer)
-        print(spouse_employer)
         recommended_plans = {'low':{}, 'med':{}, 'high':{}}
         recommended_plans_cost = {'low':{}, 'med':{}, 'high':{}}
         recommended_coverage_split = {'low':{}, 'med':{}, 'high':{}}
@@ -245,6 +260,7 @@ def recommendation():
                 recommended_plans[util][me_employer] = top_plan_id
                 recommended_plans_cost[util][me_employer] = comparison_table[me_employer][top_coverage][top_plan_id][util]
                 recommended_coverage_split[util][me_employer] = top_coverage
+
         elif me_employer is not None and spouse_employer is not None:
             if int(family['children']) > 0 :
                 coverage_split_types = [{me_employer:'ee_family'}, {me_employer:'ee', spouse_employer:'ee_children'}, {me_employer:'ee_children', spouse_employer:'ee'}, {spouse_employer:'ee_family'}]
@@ -256,29 +272,117 @@ def recommendation():
                 top_plan_id = None
                 for split_type in coverage_split_types:
                     cost = 0
-                    plans = split_type
-                    costs = split_type
+                    r_plans = {}
+                    r_costs = {}
                     for employer in split_type:        
-                        coverage = split_type[employer]           
+                        coverage = split_type[employer]
                         plan_id = best_plans[util][coverage][employer]
-                        plans[employer] = plan_id
+                        r_plans[employer] = plan_id
                         plan_cost = comparison_table[employer][coverage][plan_id][util]
                         cost += plan_cost
-                        costs[employer] = plan_cost
+                        r_costs[employer] = plan_cost
                     if cost < min_cost:
                         min_cost = cost
-                        recommended_plans[util] = plans
-                        recommended_plans_cost[util] = plan_cost
+                        recommended_plans[util] = r_plans
+                        recommended_plans_cost[util] = r_costs
                         recommended_coverage_split[util] = split_type
 
-        print(recommended_plans)
-        print(recommended_plans_cost)
-        print(recommended_coverage_split)
+    human_readable = {}
+    for util in recommended_coverage_split:
+        split = recommended_coverage_split[util]
+        r_plans = recommended_plans[util]
+        r_cost = recommended_plans_cost[util]
+        overall_text = ""
+        recs = []
+        overall_cost = 0
+        option_id = ''
+        for employer in split:
+            is_spouse = False
+            if employer == spouse_employer:
+                is_spouse = True
+            split_type = split[employer]
+            option_id += employer+":"+split_type
+            plan_id = r_plans[employer]
+            cost = r_cost[employer]
+            plan = get_plan_by_id(plans=plans, plan_id=plan_id)
+            text = capitalize_first(get_human_readable_split(split_type, is_spouse) + " should be on the plan " + plan['plan_name'] +" offered by "+employer)
+            overall_text += "Plan for "+ get_human_readable_split(split_type, is_spouse) + " - " + plan['plan_name'] +" offered by "+ employer +" costing you $"+str(cost)+". "
+            rec = {}
+            rec['text'] = text
+            rec['plan'] = plan
+            rec['cost'] = int(cost)
+            rec['price'] = price[plan_id][split_type]
+            recs.append(rec)
+            overall_cost += cost
+        human_readable[util] = {}
+        human_readable[util]['option_id'] = option_id
+        human_readable[util]['text'] = overall_text
+        human_readable[util]['recs'] = recs
+        human_readable[util]['cost'] = str(overall_cost)
 
+    options = {'low':[], 'med':[], 'high':[]}
+    if me_employer is not None and spouse_employer is None:
+        top_coverage = coverage_types[len(coverage_types) - 1]
+        for util in options:
+            for plan in plans:
+                employer = plan['employer_name']
+                option_id = employer+':'+top_coverage;
+                plan_id = str(plan.key.id)
+                is_spouse = False
+                if employer == spouse_employer:
+                    is_spouse = True
+                text = capitalize_first(get_human_readable_split(top_coverage, is_spouse) + " on the plan " + plan['plan_name'])
+                cost = comparison_table[employer][top_coverage][plan_id][util]
+                rec = {}
+                rec['option_id'] = option_id
+                if option_id == human_readable[util]['option_id']:
+                    rec['recommended'] = 'yes'
+
+                rec['text'] = text
+                rec['costs'] = int(cost)
+                rec['price'] = price[plan_id][top_coverage]
+                options[util].append(rec)
+    elif me_employer is not None and spouse_employer is not None:
+        if int(family['children']) > 0 :
+            coverage_split_types = [{me_employer:'ee_family'}, {me_employer:'ee', spouse_employer:'ee_children'}, {me_employer:'ee_children', spouse_employer:'ee'}, {spouse_employer:'ee_family'}]
+        else:
+            coverage_split_types = [{me_employer:'ee_spouse'}, {me_employer:'ee', spouse_employer:'ee'}, {spouse_employer:'ee_spouse'}]
+        for util in options:
+            for split_type in coverage_split_types:
+                text = ''
+                cost = 0
+                p = 0
+                option_id = '';
+                for employer in split_type:
+                    coverage_type = split_type[employer]
+                    option_id += employer+":"+coverage_type
+                    plan_id = best_plans[util][coverage_type][employer]
+                    plan = get_plan_by_id(plans, plan_id)
+                    is_spouse = False
+                    if employer == spouse_employer:
+                        is_spouse = True
+
+                    text += capitalize_first(get_human_readable_split(coverage_type, is_spouse) + " on the plan " + plan['plan_name'] +". ")
+                    cost += comparison_table[employer][coverage_type][plan_id][util]
+                    p += price[plan_id][coverage_type]
+                rec = {}
+                rec['option_id'] = option_id
+                if option_id == human_readable[util]['option_id']:
+                    rec['recommended'] = 'yes'
+                rec['text'] = text
+                rec['cost'] = int(cost)
+                rec['price'] = p
+                options[util].append(rec)
+
+    # recommendation[text, plan, cost]
+    # low_recomentation[text, cost, components=[recommendation]]
+    print(options)
     return render_template(
         "recommendation.html",
         family=family,
-        plans=plans)
+        plans=plans,
+        recommendation=human_readable,
+        options=options)
 # [END recommendation]
 
 def expected_utilization(data, age, gender):
@@ -380,6 +484,36 @@ def get_wellness_benefits(plan, coverage_types):
         wellness_benefitss[coverage_type] = wellness_benefits
     return wellness_benefitss
 
+def get_human_readable_split(coverage_type, is_spouse=False):
+    if coverage_type == 'ee':
+        if is_spouse:
+            return "your spouse"
+        else:
+            return "you"
+    elif coverage_type == 'ee_spouse':
+        if is_spouse:
+            return "you and your spouse"
+        else:
+            return "you and your spouse"
+    elif coverage_type == 'ee_children':
+        if is_spouse:
+            return "your spouse and your children"
+        else:
+            return "you and your children"
+    elif coverage_type == 'ee_family':
+        if is_spouse:
+            return "you and your family"
+        else:
+            return "you and your family"
+
+def get_plan_by_id(plans, plan_id):
+    print(plans)
+    for p in plans:
+        if str(p.key.id) == plan_id:
+            return p
+
+def capitalize_first(text):
+    return text[0].capitalize() + text[1:]
 # @crud.route('/<id>/edit', methods=['GET', 'POST'])
 # def edit(id):
 #     book = get_model().read(id)

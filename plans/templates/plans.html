@@ -63,6 +63,8 @@
 
 <script type="text/javascript" src="https://dl.dropboxusercontent.com/u/1096641/d3-tip.js"></script>
 <script>
+// make changes to the graph. Bonus -> Net Premium -> Dashed Deductible
+// Use the right tier here
 var data = [
 {% for plan in plans %}
   {plan_name: "{{plan.plan_name}}", premium: {{plan.ee_cost|int}}, premium_cycle: "{{plan.ee_cost_cycle}}", deductible: {{plan.ee_deductible|int}}, oop: {{plan.ee_oop_max|int}}, funding: {{plan.ee_er_funding|int}}},
