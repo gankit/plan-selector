@@ -63,8 +63,8 @@
   {% for option in options[util] %}
     <tr {% if option['recommended'] %}class="table-success" {% endif %}>
       <td>{{option.text}}</td>
-      <td>{{option.price}}</td>
-      <td>{{option.cost}}</td>
+      <td>${{option.price}}</td>
+      <td>${{option.cost}}</td>
     </tr>
 {% endfor %}    
   </tbody>

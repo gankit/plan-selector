@@ -54,9 +54,7 @@ def item(keyName, id=None):
     ds = get_client()
     if id:
         key = ds.key(keyName, int(id))
-        print(key)
         item = ds.get(key)
-        print(item)
         return item
     else:
         return None

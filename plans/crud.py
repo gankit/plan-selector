@@ -22,7 +22,13 @@ crud = Blueprint('crud', __name__)
 # [START index]
 @crud.route("/")
 def index():
-    return render_template("index.html")
+    family_id = request.args.get('family', None)
+    if family_id:
+        family_id = family_id.encode('utf-8')
+
+    family = get_model().item('Family', id=family_id)
+
+    return render_template("index.html", family=family)
 # [END index]
 
 @crud.route("/start", methods=['GET', 'POST'])
@@ -325,8 +331,8 @@ def recommendation():
             if employer == spouse_employer:
                 is_spouse = True
             split_type = split[employer]
-            option_id += employer+":"+split_type
             plan_id = r_plans[employer]
+            option_id += employer+":"+split_type+":"+plan_id
             cost = r_cost[employer]
             plan = get_plan_by_id(plans=plans, plan_id=plan_id)
             text = capitalize_first(get_human_readable_split(split_type, is_spouse) + " should be on the plan " + plan['plan_name'] +" offered by "+employer)
@@ -350,8 +356,8 @@ def recommendation():
         for util in options:
             for plan in plans:
                 employer = plan['employer_name']
-                option_id = employer+':'+top_coverage;
                 plan_id = str(plan.key.id)
+                option_id = employer+':'+top_coverage+":"+plan_id;
                 is_spouse = False
                 if employer == spouse_employer:
                     is_spouse = True
@@ -363,8 +369,8 @@ def recommendation():
                     rec['recommended'] = 'yes'
 
                 rec['text'] = text
-                rec['costs'] = int(cost)
-                rec['price'] = price[plan_id][top_coverage]
+                rec['cost'] = int(cost)
+                rec['price'] = int(price[plan_id][top_coverage])
                 options[util].append(rec)
     elif me_employer is not None and spouse_employer is not None:
         if int(family['children']) > 0 :
@@ -379,8 +385,8 @@ def recommendation():
                 option_id = '';
                 for employer in split_type:
                     coverage_type = split_type[employer]
-                    option_id += employer+":"+coverage_type
                     plan_id = best_plans[util][coverage_type][employer]
+                    option_id += employer+":"+coverage_type+":"+plan_id
                     plan = get_plan_by_id(plans, plan_id)
                     is_spouse = False
                     if employer == spouse_employer:
@@ -395,9 +401,10 @@ def recommendation():
                     rec['recommended'] = 'yes'
                 rec['text'] = text
                 rec['cost'] = int(cost)
-                rec['price'] = p
+                rec['price'] = int(p)
                 options[util].append(rec)
-
+    print(options)
+    print(human_readable)
     # recommendation[text, plan, cost]
     # low_recomentation[text, cost, components=[recommendation]]
     return render_template(
