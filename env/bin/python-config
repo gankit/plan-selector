@@ -1,4 +1,4 @@
-#!/home/ankitgupta00/plan-selector/env/bin/python
+#!/Users/ankit/Code/plan-selector/env/bin/python
 
 import sys
 import getopt

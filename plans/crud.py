@@ -201,6 +201,8 @@ def recommendation():
             wellness_benefits = get_wellness_benefits(plan=plan, coverage_types=coverage_types)
             for coverage_type in coverage_types:
                 price[plan_id][coverage_type] = premiums[coverage_type] - er_fundings[coverage_type] - wellness_benefits[coverage_type]
+        print('prices')
+        print(price)
         for plan in plans:
             plan_id = str(plan.key.id)
             if plan_id not in price:
