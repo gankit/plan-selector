@@ -27,7 +27,7 @@
 
 <div class="plan_comparison container">
   <div class="row">
-  <p class="col">Here is a comparison of all your plans to cover {{display_coverage_type_text}}.</p>
+  <p class="col lead">Comparison of all your plans to cover <b>{{display_coverage_type_text}}</b>.</p>
   </div>
   <div class="row">
     <div class="col-4">
@@ -54,9 +54,9 @@
 {% for plan in plans_display_data %}
   <div class="row">
     <div class="col-4">
-      <b><a href="/plans/{{plan.key.id}}">{{plan.plan_name}}</a><br>
-        {% if plan.hsa_qualified == 'yes' %}<small class="text-muted">HSA.</small> {% endif %}
-        {% if plan.oon_coverage_included == 'yes' %}<small class="text-muted">Out of network included.</small>{% endif %}
+      <b><a href="/plans/{{plan.key.id}}">{{plan.insurer_name}} - {{plan.plan_name}}</a><br>
+        {% if plan.hsa_qualified == 'yes' %}<small class="text-muted">HSA qualified.</small> {% endif %}
+        {% if plan.oon_coverage_included == 'yes' %}<small class="text-muted">Includes out of network coverage.</small>{% endif %}
       </b>
     </div>
     <div class="col-8"><svg class="plan_{{plan.key.id}}_details" width="600" height="70"></svg></div>
@@ -65,7 +65,8 @@
 </div>
 
 <a href="/plans/recommendation?family={{family.key.id}}" role="button" class="btn btn-primary btn-lg">Find the best plan for me</a>
-
+<br>
+<br>
 <script type="text/javascript" src="https://dl.dropboxusercontent.com/u/1096641/d3-tip.js"></script>
 <script>
 // make changes to the graph. Bonus -> Net Premium -> Dashed Deductible
@@ -79,8 +80,8 @@ var data = [
 for (var i = 0; i < data.length; i++) {
   cycle = data[i].premium_cycle;
   if (cycle == "Weekly") {data[i].premium *= 52;}
-  else if (cycle == "Bi-Weekly (Twice a week)") {data[i].premium *= 104;}
-  else if (cycle == "Bi-Monthly") {data[i].premium *= 26;}
+  else if (cycle == "Bi-Weekly (Once every two weeks)") {data[i].premium *= 26;}
+  else if (cycle == "Bi-Monthly (Twice a month)") {data[i].premium *= 24;}
   else if (cycle == "Monthly") {data[i].premium *= 12;}
 }
 
@@ -97,8 +98,8 @@ for (var i = 0; i < data.length; i++) {
   funding = data[i].funding
   cycle = data[i].premium_cycle;
   if (cycle == "Weekly") {data[i].premium *= 52;}
-  else if (cycle == "Bi-Weekly (Twice a week)") {data[i].premium *= 104;}
-  else if (cycle == "Bi-Monthly") {data[i].premium *= 26;}
+  else if (cycle == "Bi-Weekly (Once every two weeks)") {data[i].premium *= 26;}
+  else if (cycle == "Bi-Monthly (Twice a month)") {data[i].premium *= 24;}
   else if (cycle == "Monthly") {data[i].premium *= 12;}
   data[i].net_premium = data[i].premium - funding;
 }

@@ -34,7 +34,7 @@
   </head>
   <body>
 <!-- As a heading -->
-  <nav class="navbar navbar-toggleable-sm navbar-inverse bg-primary">
+  <nav class="navbar navbar-toggleable-sm navbar-inverse bg-primary sticky-top">
     <div class="container">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
             ☰
@@ -87,6 +87,38 @@
       <h1 class="navbar-brand mb-0">Plan Selector</h1>
     </nav>
  -->    {% block content %}{% endblock %}
+ <footer id="footer" class="bg-inverse">
+    <div class="container">
+        <div class="row">
+            <div class="col-4 col-sm-4 column">
+                <h6 class="text-uppercase">About</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" data-toggle="modal" data-target="#alertModal" >Contact Us</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#alertModal" >Privacy Policy</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#alertModal" >Terms &amp; Conditions</a></li>
+                </ul>
+            </div>
+            <div class="col-4 col-sm-4 column">
+                <h6 class="text-uppercase">Stay Posted</h6>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" title="No spam, we promise!" placeholder="Tell us your email">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#alertModal" type="button">Subscribe for updates</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-4 col-sm-3 text-xs-right">
+                <h6 class="text-uppercase">Give us some love.</h6>
+                <ul class="list-inline">
+                    <li class="list-inline-item"><a rel="nofollow" href="" title="Twitter"><i class="icon-lg ion-social-twitter-outline"></i></a>&nbsp;</li>
+                    <li class="list-inline-item"><a rel="nofollow" href="" title="Facebook"><i class="icon-lg ion-social-facebook-outline"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
   </body>
