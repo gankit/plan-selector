@@ -19,7 +19,8 @@
 
 {% block content %}
 <div class="container">
-<h4>Enter plan information</h4>
+<h1 class="display-4">Enter plan information</h1>
+<br>
 <form method="POST" enctype="multipart/form-data" data-toggle="validator" role="form" id="input_form">
 
   <div class="form-group row" id="plan_source_details">
@@ -53,7 +54,7 @@
         </div>
       </div>
       <div class="help-block with-errors form-control-feedback"></div>      
-      <small id="plan_source_other_warning_tip" class="form-text text-muted text-danger {% if plan.plan_source == 'other' %} hidden-xl-down {% endif %}">We currently doesn't support plan optimization for Medicaid plans. Please consult someone else for this decision.</small>
+      <small id="plan_source_other_warning_tip" class="form-text text-muted text-danger {% if plan.plan_source == 'other' %} hidden-xl-down {% endif %}">We currently don't support plan optimization for Medicaid plans. Please consult someone else for this decision.</small>
     </div>
   </div>
 
@@ -136,11 +137,11 @@
   <div class="form-group row">
     <label class="col-sm-2 col-form-label">Cost</label>
     <div class="dropdown col-sm-2">
-      <input type="hidden" id="ee_cost_cycle" name="ee_cost_cycle" value="{{plan.ee_cost_cycle|default('Bi-Monthly')}}" />
-      <button type="button" id="ee_cost_cycle_button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{plan.ee_cost_cycle|default('Bi-Monthly')}}
+      <input type="hidden" id="ee_cost_cycle" name="ee_cost_cycle" value="{{plan.ee_cost_cycle|default('Monthly')}}" />
+      <button type="button" id="ee_cost_cycle_button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{plan.ee_cost_cycle|default('Monthly')}}
       </button>
       <div class="dropdown-menu">
-        {% for cycle in ['Bi-Weekly (Twice a week)', 'Weekly', 'Bi-Monthly', 'Monthly', 'Annually'] %}
+        {% for cycle in ['Bi-Weekly (Once every two weeks)', 'Weekly', 'Bi-Monthly (Twice a month)', 'Monthly', 'Annually'] %}
         <a onclick="var val = this.text; $('#ee_cost_cycle').val(val); $('#ee_cost_cycle_button').text(val);" class="dropdown-item">{{ cycle }}</a>
         {% endfor %}
       </div>

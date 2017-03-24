@@ -24,7 +24,7 @@
  <p class="lead">We are looking for the best plan combination that covers you{% if family.marital_status == 'married' and family.children|int > 0 %}, your spouse and your children{% elif family.marital_status == 'married' %} and your spouse{% elif family.children|int > 0 %} and your children{% endif %}.</p>
 <br>
 <div class="row">
-	<div class="col-6"><h4>What is your expected utilization?</h4></div>
+	<div class="col-6"><h4>What is your expected healthcare utilization?</h4></div>
 	<div class="col-6">
 		<label class="custom-control custom-radio">
 		  <input id="radio_low" name="radio" type="radio" class="custom-control-input utilization_radio"/>
@@ -68,8 +68,8 @@
   </tbody>
 </table>
 </div>
-<br>
 {% endfor %}
+<br>
 <div class="rec-row hidden-xl-down">
 <h4>Our Recommendation</h4>
 </div>

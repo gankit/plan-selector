@@ -85,6 +85,8 @@ def plans():
     for plan in plans:
         new_plan = {}
         new_plan['plan_name'] = plan['plan_name']
+        new_plan['insurer_name'] = plan['insurer_name']
+        new_plan['employer_name'] = plan['employer_name']
         plan_id = plan.key.id
         new_plan['key'] = {'id':plan_id}
         new_plan['cost_cycle'] = plan['ee_cost_cycle']
@@ -361,7 +363,7 @@ def recommendation():
                 is_spouse = False
                 if employer == spouse_employer:
                     is_spouse = True
-                text = capitalize_first(get_human_readable_split(top_coverage, is_spouse) + " on the plan " + plan['plan_name'])
+                text = capitalize_first(get_human_readable_split(top_coverage, is_spouse) + " on " +plan['insurer_name'] + " - " + plan['plan_name'] +" offered by " + plan['employer_name'])
                 cost = comparison_table[employer][top_coverage][plan_id][util]
                 rec = {}
                 rec['option_id'] = option_id
@@ -392,7 +394,7 @@ def recommendation():
                     if employer == spouse_employer:
                         is_spouse = True
 
-                    text += capitalize_first(get_human_readable_split(coverage_type, is_spouse) + " on the plan " + plan['plan_name'] +". ")
+                    text += capitalize_first(get_human_readable_split(coverage_type, is_spouse) + " on " + plan['insurer_name'] + " - " + plan['plan_name'] +" offered by " + plan['employer_name'] + ". ")
                     cost += comparison_table[employer][coverage_type][plan_id][util]
                     p += price[plan_id][coverage_type]
                 rec = {}
@@ -462,14 +464,12 @@ def get_annual_premiums(plan, coverage_types):
         cycle = plan['ee_cost_cycle']
         if cycle == "Weekly":
             premium *= 52
-        elif cycle == "Bi-Weekly (Twice a week)":
-            premium *= 104
-        elif cycle == "Bi-Monthly":
+        elif cycle == "Bi-Weekly (Once every two weeks)":
             premium *= 26
+        elif cycle == "Bi-Monthly (Twice a month)":
+            premium *= 24
         if cycle == "Monthly":
             premium *= 12
-        if cycle == "Semi-Annually":
-            premium *= 2
         premiums[coverage_type] = premium
     return premiums
 
