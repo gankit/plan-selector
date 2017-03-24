@@ -27,22 +27,31 @@
 	<div class="col-6"><h4>What is your expected healthcare utilization?</h4></div>
 	<div class="col-6">
 		<label class="custom-control custom-radio">
-		  <input id="radio_low" name="radio" type="radio" class="custom-control-input utilization_radio"/>
+		  <input id="radio_low" name="utilization_radio" type="radio" class="custom-control-input utilization_radio"/>
 		  <span class="custom-control-indicator"></span>
 		  <span class="custom-control-description">Low</span>
 		</label>
 		<label class="custom-control custom-radio">
-		  <input id="radio_med" name="radio" type="radio" class="custom-control-input utilization_radio">
+		  <input id="radio_med" name="utilization_radio" type="radio" class="custom-control-input utilization_radio" checked/>
 		  <span class="custom-control-indicator"></span>
 		  <span class="custom-control-description">Medium</span>
 		</label>
 		<label class="custom-control custom-radio">
-		  <input id="radio_high" name="radio" type="radio" class="custom-control-input utilization_radio">
+		  <input id="radio_high" name="utilization_radio" type="radio" class="custom-control-input utilization_radio">
 		  <span class="custom-control-indicator"></span>
 		  <span class="custom-control-description">High</span>
 		</label>
 	</div>
 </div>
+<br>
+<div class="rec-row hidden-xl-down">
+<h4>Our Recommendation</h4>
+</div>
+{% for util in ['low', 'med', 'high'] %}
+<div class="recommendation-text recommendation-text-{{util}} hidden-xl-down">
+<p>{{recommendation[util].text}}</p>
+</div>
+{% endfor %}
 <br>
 <div class="options-row hidden-xl-down">
 <h4>Your best options</h4>
@@ -61,8 +70,8 @@
   {% for option in options[util] %}
     <tr {% if option['recommended'] %}class="table-success" {% endif %}>
       <td>{{option.text}}</td>
-      <td>${{option.price}}</td>
-      <td>${{option.cost}}</td>
+      <td>${{option.price|round(2, 'ceil')}}</td>
+      <td>${{option.cost|round(2, 'ceil')}}</td>
     </tr>
 {% endfor %}    
   </tbody>
@@ -70,14 +79,6 @@
 </div>
 {% endfor %}
 <br>
-<div class="rec-row hidden-xl-down">
-<h4>Our Recommendation</h4>
-</div>
-{% for util in ['low', 'med', 'high'] %}
-<div class="recommendation-text recommendation-text-{{util}} hidden-xl-down">
-<p>{{recommendation[util].text}}</p>
-</div>
-{% endfor %}
 </div>
 <script type="text/javascript">
 
@@ -93,6 +94,8 @@
   		update_utilization(this);
   	});
 
+	var selected = $("input[type='radio'][name='utilization_radio']:checked");
+	if (selected.length > 0) {update_utilization(selected[0])}
   });
   
   function update_utilization(radio_element) {

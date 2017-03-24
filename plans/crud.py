@@ -185,7 +185,7 @@ def recommendation():
     with urllib.request.urlopen(url) as response:
         obj = response.read().decode('utf8')
         data = json.loads(obj)
-        comparison_dataset = data['values']
+        utilization_dataset = data['values']
         me_employer = None
         spouse_employer = None
         # print(comparison_dataset)
@@ -201,8 +201,8 @@ def recommendation():
             wellness_benefits = get_wellness_benefits(plan=plan, coverage_types=coverage_types)
             for coverage_type in coverage_types:
                 price[plan_id][coverage_type] = premiums[coverage_type] - er_fundings[coverage_type] - wellness_benefits[coverage_type]
-        print('prices')
-        print(price)
+        # print(price)
+        # print("---------------------")
         for plan in plans:
             plan_id = str(plan.key.id)
             if plan_id not in price:
@@ -224,36 +224,48 @@ def recommendation():
                     comparison_table[employer][coverage_type][plan_id] = {}
                 utilization = {}
                 if coverage_type == 'ee':
-                    age = str(family['me_age'])
-                    gender = str(family['me_gender'])
-                    utilization = expected_utilization(data=comparison_dataset, age=age, gender=gender)
+                    if plan['plan_source'] == 'employer':
+                        age = str(family['me_age'])
+                        gender = str(family['me_gender'])
+                        utilization = expected_utilization(data=utilization_dataset, age=age, gender=gender)
+                    elif plan['plan_source'] == 'spouse_employer':
+                        age = str(family['spouse_age'])
+                        gender = str(family['spouse_gender'])
+                        utilization = expected_utilization(data=utilization_dataset, age=age, gender=gender)
+
                 if coverage_type == 'ee_spouse':
                     age = str(family['me_age'])
                     gender = str(family['me_gender'])
-                    utilization_1 = expected_utilization(data=comparison_dataset, age=age, gender=gender)
+                    utilization_1 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
                     age = str(family['spouse_age'])
                     gender = str(family['spouse_gender'])
-                    utilization_2 = expected_utilization(data=comparison_dataset, age=age, gender=gender)
+                    utilization_2 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
                     for util in utilization_1:
                         utilization[util] = utilization_1[util] + utilization_2[util]
                 if coverage_type == 'ee_children':
-                    age = str(family['me_age'])
-                    gender = str(family['me_gender'])
-                    utilization_1 = expected_utilization(data=comparison_dataset, age=age, gender=gender)
-                    utilization_2 = expected_utilization(data=comparison_dataset, age='Child', gender='Child')
+                    utilization_1 = {}
+                    if plan['plan_source'] == 'employer':
+                        age = str(family['me_age'])
+                        gender = str(family['me_gender'])
+                        utilization_1 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
+                    elif plan['plan_source'] == 'spouse_employer':
+                        age = str(family['spouse_age'])
+                        gender = str(family['spouse_gender'])
+                        utilization_1 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
+                    utilization_2 = expected_utilization(data=utilization_dataset, age='Child', gender='Child')
                     for util in utilization_1:
                         utilization[util] = utilization_1[util] + int(family['children'])*utilization_2[util]
                 if coverage_type == 'ee_family':
                     age = str(family['me_age'])
                     gender = str(family['me_gender'])
-                    utilization_1 = expected_utilization(data=comparison_dataset, age=age, gender=gender)
-                    utilization_2 = expected_utilization(data=comparison_dataset, age='Child', gender='Child')
+                    utilization_1 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
+                    utilization_2 = expected_utilization(data=utilization_dataset, age='Child', gender='Child')
                     age = str(family['spouse_age'])
                     gender = str(family['spouse_gender'])
-                    utilization_3 = expected_utilization(data=comparison_dataset, age=age, gender=gender)
+                    utilization_3 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
                     for util in utilization_1:
                         utilization[util] = utilization_1[util] + int(family['children'])*utilization_2[util] + utilization_3[util]
-
+                # print(utilization)
                 comparison_table[employer][coverage_type][plan_id] = utilization
                 for util in utilization:
                     cost = 0
@@ -340,11 +352,11 @@ def recommendation():
             cost = r_cost[employer]
             plan = get_plan_by_id(plans=plans, plan_id=plan_id)
             text = capitalize_first(get_human_readable_split(split_type, is_spouse) + " should be on the plan " + plan['plan_name'] +" offered by "+employer)
-            overall_text += "Plan for "+ get_human_readable_split(split_type, is_spouse) + " - " + plan['plan_name'] +" offered by "+ employer +" costing you $"+str(cost)+". "
+            overall_text += "Plan for "+ get_human_readable_split(split_type, is_spouse) + " - " + plan['plan_name'] +" offered by "+ employer +" costing you $"+"{0:.2f}".format(cost)+". "
             rec = {}
             rec['text'] = text
             rec['plan'] = plan
-            rec['cost'] = int(cost)
+            rec['cost'] = cost
             rec['price'] = price[plan_id][split_type]
             recs.append(rec)
             overall_cost += cost
@@ -373,8 +385,8 @@ def recommendation():
                     rec['recommended'] = 'yes'
 
                 rec['text'] = text
-                rec['cost'] = int(cost)
-                rec['price'] = int(price[plan_id][top_coverage])
+                rec['cost'] = cost
+                rec['price'] = price[plan_id][top_coverage]
                 options[util].append(rec)
     elif me_employer is not None and spouse_employer is not None:
         if int(family['children']) > 0 :
@@ -404,11 +416,11 @@ def recommendation():
                 if option_id == human_readable[util]['option_id']:
                     rec['recommended'] = 'yes'
                 rec['text'] = text
-                rec['cost'] = int(cost)
-                rec['price'] = int(p)
+                rec['cost'] = cost
+                rec['price'] = p
                 options[util].append(rec)
-    print(options)
-    print(human_readable)
+    # print(options)
+    # print(human_readable)
     # recommendation[text, plan, cost]
     # low_recomentation[text, cost, components=[recommendation]]
     return render_template(
