@@ -92,11 +92,12 @@ def plans():
         new_plan['cost_cycle'] = plan['ee_cost_cycle']
         new_plan['hsa_qualified'] = plan['hsa_qualified']
         new_plan['oon_coverage_included'] = plan['oon_coverage_included']
-        new_plan['cost'] = get_premiums(plan, [display_coverage_type])[display_coverage_type]
+        new_plan['annual_premium'] = get_annual_premiums(plan, [display_coverage_type])[display_coverage_type]
         new_plan['deductible'] = get_deductibles(plan, [display_coverage_type])[display_coverage_type]
         new_plan['oop_max'] = get_oop(plan, [display_coverage_type])[display_coverage_type]
         new_plan['er_funding'] = get_er_fundings(plan, [display_coverage_type])[display_coverage_type]
         plans_display_data.append(new_plan)
+    plans_display_data.sort(key=lambda x:float(x['annual_premium']));
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.start'))

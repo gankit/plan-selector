@@ -73,16 +73,11 @@
 // Use the right tier here
 var data = [
 {% for plan in plans_display_data %}
-  {plan_name: "{{plan.plan_name}}", premium: {{plan.cost|default("0")|int}}, premium_cycle: "{{plan.cost_cycle}}", deductible: {{plan.deductible|default("0")|int}}, oop: {{plan.oop_max|default("0")|int}}, funding: {{plan.er_funding|default("0")|int}}},
+  {plan_name: "{{plan.plan_name}}", premium: {{plan.annual_premium|default("0")|int}}, deductible: {{plan.deductible|default("0")|int}}, oop: {{plan.oop_max|default("0")|int}}, funding: {{plan.er_funding|default("0")|int}}},
 {%endfor%}
 ];
 
 for (var i = 0; i < data.length; i++) {
-  cycle = data[i].premium_cycle;
-  if (cycle == "Weekly") {data[i].premium *= 52;}
-  else if (cycle == "Bi-Weekly (Once every two weeks)") {data[i].premium *= 26;}
-  else if (cycle == "Bi-Monthly (Twice a month)") {data[i].premium *= 24;}
-  else if (cycle == "Monthly") {data[i].premium *= 12;}
   data[i].net_premium = data[i].premium - data[i].funding;
   data[i].net_oop = data[i].oop - data[i].deductible;
 }
@@ -94,21 +89,15 @@ var series = d3.stack()
 
 {% for plan in plans_display_data %}
 var data = [
-  {plan_name: "{{plan.plan_name}}", premium: {{plan.cost|default("0")|int}}, premium_cycle: "{{plan.cost_cycle}}", deductible: {{plan.deductible|default("0")|int}}, oop: {{plan.oop_max|default("0")|int}}, funding: {{plan.er_funding|default("0")|int}}},
+  {plan_name: "{{plan.plan_name}}", premium: {{plan.annual_premium|default("0")|int}}, deductible: {{plan.deductible|default("0")|int}}, oop: {{plan.oop_max|default("0")|int}}, funding: {{plan.er_funding|default("0")|int}}},
 ];
 for (var i = 0; i < data.length; i++) {
   funding = data[i].funding
-  cycle = data[i].premium_cycle;
-  if (cycle == "Weekly") {data[i].premium *= 52;}
-  else if (cycle == "Bi-Weekly (Once every two weeks)") {data[i].premium *= 26;}
-  else if (cycle == "Bi-Monthly (Twice a month)") {data[i].premium *= 24;}
-  else if (cycle == "Monthly") {data[i].premium *= 12;}
   data[i].net_premium = data[i].premium - funding;
   data[i].net_oop = data[i].oop - data[i].deductible;
 }
 
 data_item = [data[0]];
-console.log(data_item);
 var series_item = d3.stack()
     .keys(["funding", "net_premium", "deductible", "net_oop"])
     .offset(d3.stackOffsetNone)
@@ -138,7 +127,6 @@ var tip = d3.tip()
       .attr("class", "d3-tip")
       .offset([-8, 0])
       .html(function(d) { 
-        console.log(d); 
         if (typeof d == 'object') {
           var title;
           if(d[0] === 0) { title = "Funding"; return title + ": $"+ (d[1] - d[0]);}
@@ -149,8 +137,6 @@ var tip = d3.tip()
 svg.call(tip);
 
 // Add marker
-console.log(series_item);
-
 marker_data = series_item[3];
 // deductible_start = series_item[2][0][0]; 
 // marker_data[0] -= deductible_start;
@@ -214,7 +200,6 @@ function stackOffsetDiverging(series, order) {
 }
 
 $(document).ready(function() {
-  console.log($('g[fill="#2ca02c"] rect'));
   $('g[fill="#2ca02c"] rect').attr('class', 'bar deductible_bar');  
 });
 </script>
