@@ -73,7 +73,7 @@
 // Use the right tier here
 var data = [
 {% for plan in plans_display_data %}
-  {plan_name: "{{plan.plan_name}}", premium: {{plan.cost|int}}, premium_cycle: "{{plan.cost_cycle}}", deductible: {{plan.deductible|int}}, oop: {{plan.oop_max|int}}, funding: {{plan.er_funding|int}}},
+  {plan_name: "{{plan.plan_name}}", premium: {{plan.cost|default("0")|int}}, premium_cycle: "{{plan.cost_cycle}}", deductible: {{plan.deductible|default("0")|int}}, oop: {{plan.oop_max|default("0")|int}}, funding: {{plan.er_funding|default("0")|int}}},
 {%endfor%}
 ];
 
@@ -83,10 +83,12 @@ for (var i = 0; i < data.length; i++) {
   else if (cycle == "Bi-Weekly (Once every two weeks)") {data[i].premium *= 26;}
   else if (cycle == "Bi-Monthly (Twice a month)") {data[i].premium *= 24;}
   else if (cycle == "Monthly") {data[i].premium *= 12;}
+  data[i].net_premium = data[i].premium - data[i].funding;
+  data[i].net_oop = data[i].oop - data[i].deductible;
 }
 
 var series = d3.stack()
-    .keys(["premium", "deductible", "funding", "oop"])
+    .keys(["funding", "net_premium", "deductible", "net_oop"])
     .offset(d3.stackOffsetNone)
     (data);
 
@@ -102,12 +104,13 @@ for (var i = 0; i < data.length; i++) {
   else if (cycle == "Bi-Monthly (Twice a month)") {data[i].premium *= 24;}
   else if (cycle == "Monthly") {data[i].premium *= 12;}
   data[i].net_premium = data[i].premium - funding;
+  data[i].net_oop = data[i].oop - data[i].deductible;
 }
 
 data_item = [data[0]];
-
+console.log(data_item);
 var series_item = d3.stack()
-    .keys(["funding", "net_premium", "deductible", "oop"])
+    .keys(["funding", "net_premium", "deductible", "net_oop"])
     .offset(d3.stackOffsetNone)
     (data_item);
 
@@ -135,33 +138,36 @@ var tip = d3.tip()
       .attr("class", "d3-tip")
       .offset([-8, 0])
       .html(function(d) { 
-        console.log(d);
+        console.log(d); 
         if (typeof d == 'object') {
           var title;
           if(d[0] === 0) { title = "Funding"; return title + ": $"+ (d[1] - d[0]);}
           else if(d[0] === d.data.funding) { title = "Premium"; return title + ": $"+ d[1];}
           else if(d[0] === d.data.funding + d.data.net_premium) { title = "Deductible"; return title + ": $"+ (d[1] - d[0]);}
-          
-        }
-        else {return "Out Of Pocket Maximum: $" + d;}
-      });
+          else if(d[0] === d.data.funding + d.data.net_premium + d.data.deductible) { return "Out Of Pocket Maximum: $" + d.data.oop; }
+      }});
 svg.call(tip);
 
 // Add marker
 console.log(series_item);
 
-marker_data = series_item[3][0];
+marker_data = series_item[3];
+// deductible_start = series_item[2][0][0]; 
+// marker_data[0] -= deductible_start;
+// marker_data[1] -= deductible_start;
 // var marker = svg.selectAll("line.marker");
-svg.append("line")
+svg.append("g")
+  .selectAll("g")
   .data(marker_data)
-  .attr("x1", x(marker_data[1]))
-  .attr("x2", x(marker_data[1]))
-  .attr("y2", (height - margin.bottom))
-  .attr("y1", margin.top)
-  .attr("stroke-width", 2)
-  .attr("stroke", "black")
-  .on('mouseover', tip.show)
-  .on('mouseout', tip.hide);
+  .enter().append("line")
+    .attr("x1", x(marker_data[0][1]))
+    .attr("x2", x(marker_data[0][1]))
+    .attr("y2", (height - margin.bottom))
+    .attr("y1", margin.top)
+    .attr("stroke-width", 2)
+    .attr("stroke", "black")
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 
 
 series_item = series_item.slice(0,3)
@@ -182,7 +188,6 @@ svg.append("g")
     .on('mouseover', tip.show)
     .on('mouseout', tip.hide);
 
-console.log('here1')
 {% endfor %}  
 
 function stackMin(serie) {
@@ -190,7 +195,7 @@ function stackMin(serie) {
 }
 
 function stackMax(serie) {
-  return d3.max(serie, function(d) { return d[1]; });
+  return d3.max(serie, function(d) { return 1.1*d[1]; });
 }
 
 function stackOffsetDiverging(series, order) {
