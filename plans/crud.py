@@ -21,7 +21,7 @@ import requests
 
 crud = Blueprint('crud', __name__)
 # [START index]
-@crud.route("/")
+@crud.route("/", methods=['GET', 'POST'])
 def index():
     family_id = request.args.get('family', None)
     if family_id:
@@ -29,7 +29,19 @@ def index():
 
     family = get_model().item('Family', id=family_id)
 
-    return render_template("index.html", family=family)
+    if request.method == 'POST':
+        data = request.form.to_dict(flat=True)
+        print(data)
+        print(family)
+        if family:
+            return redirect(url_for('.start', family=family_id))
+        else:
+            #create a family
+            family = get_model().update('Family', data=data, id=None)
+            return redirect(url_for('.start', family=family['id']))
+
+    else:    
+        return render_template("index.html", family=family)
 # [END index]
 
 @crud.route("/start", methods=['GET', 'POST'])
@@ -53,6 +65,7 @@ def start():
 
     family = get_model().item('Family', id=family_id)
 
+    print(family)
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.start'))
@@ -610,7 +623,7 @@ def send_welcome_email(family):
     text += "\n"
     text += "Amit and Ankit."
     text += "\n"
-    send_email(to="ankitgupta00@gmail.com", subject=subject, text=text)
+    send_email(to="amit.ghorawat@gmail.com", subject=subject, text=text)
 
 def send_recommendation_email(family):
     subject = 'Recommendation From Plan Selector'
@@ -647,17 +660,20 @@ def send_plan_link_email(family, plan):
     send_email(to="ankitgupta00@gmail.com", subject=subject, text=text)
 
 def send_email(to, subject, text):
-    url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
-    auth = ('api', MAILGUN_API_KEY)
-    data = {
-        'from': 'Plan Selector <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
-        'to': to,
-        'subject': subject,
-        'text': text
-    }
+    try:
+        url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
+        auth = ('api', MAILGUN_API_KEY)
+        data = {
+            'from': 'Plan Selector <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
+            'to': to,
+            'subject': subject,
+            'text': text
+        }
 
-    response = requests.post(url, auth=auth, data=data)
-    response.raise_for_status()
+        response = requests.post(url, auth=auth, data=data)
+        response.raise_for_status()
+    except:
+        return
 # @crud.route('/<id>/edit', methods=['GET', 'POST'])
 # def edit(id):
 #     book = get_model().read(id)
