@@ -342,11 +342,14 @@
 
   {% if family %} <input type="hidden" name="family_id" value="{{family.key.id}}"/> {% endif %}
   {% if plan %} <input type="hidden" name="plan_id" value="{{plan.key.id}}"/> {% endif %}
+  <br>
   <div>
     <button type="submit" name="save" class="btn btn-outline-success">Save</button>
     <button type="submit" name="save_and_continue_later" class="btn btn-outline-info">Save and continue later</button>
     <button type="submit" name="next" class="btn btn-primary">Next</button>
   </div>
+  <br>
+  <br>  
 </form>
 
 <div class="copy invisible">

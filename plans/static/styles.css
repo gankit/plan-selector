@@ -94,8 +94,8 @@
 }
 
 .jumbotron {
-    background-image: url("/static/abigail-keenan-7852.jpg");
-    background-color: white;
+    background-image: url("/static/antoine-beauvillain-759.jpg");
+    background-color: darkgray;
     background-repeat: no-repeat;
     background-position: bottom;
     -webkit-background-size: cover;
@@ -104,9 +104,18 @@
 
 }
 
-/*hr {
+.jumbotron h1 {
+  margin-top: 2rem;
+}
+
+.feature img {
+  width: 40%;
+  text-align: center;
+}
+.jumbotron hr {
     max-width: 120px;
     border-width: 3px;
+    text-align :left;
     opacity: 0.08;
     margin-top: 25px;
     margin-bottom: 25px;
@@ -120,7 +129,7 @@ hr.light {
 hr.primary {
     border-color: #007FFF;
     opacity: 1;
-}*/
+}
 
 .wide-space {
     letter-spacing: 1.6px;
@@ -174,13 +183,15 @@ aside {
 
 #footer {
     padding: 45px;
-    margin-top: 45px;
 }
 
 #footer h4, #footer h6 {
     color:#fff;
 }
 
+.about-text {
+  color: #dedede;
+}
 .navbar {
     border-color: rgba(35,35,35,.05);
     background-color: #fff;

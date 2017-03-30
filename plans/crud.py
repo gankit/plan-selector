@@ -57,7 +57,8 @@ def start():
     if not family and family_id:
         return redirect(url_for('.start'))
     
-    send_welcome_email(family)
+    if family:
+        send_welcome_email(family)
     
     return render_template("start.html", family=family)
 
