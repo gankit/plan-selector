@@ -17,11 +17,13 @@ from flask import Blueprint, redirect, render_template, request, url_for
 import logging
 import json
 import urllib.request
+import requests
 
 crud = Blueprint('crud', __name__)
 # [START index]
 @crud.route("/")
 def index():
+    send_simple_message('ankitgupta00@gmail.com')
     family_id = request.args.get('family', None)
     if family_id:
         family_id = family_id.encode('utf-8')
@@ -581,6 +583,21 @@ def get_plan_by_id(plans, plan_id):
 
 def capitalize_first(text):
     return text[0].capitalize() + text[1:]
+
+MAILGUN_DOMAIN_NAME = 'sandbox06997d18109746479b9f130895af8afe.mailgun.org'
+MAILGUN_API_KEY = 'key-ead29a6a186d7b7b472a39b2e7777597'
+def send_simple_message(to):
+    url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
+    auth = ('api', MAILGUN_API_KEY)
+    data = {
+        'from': 'Mailgun User <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
+        'to': to,
+        'subject': 'Simple Mailgun Example',
+        'text': 'Plaintext content',
+    }
+
+    response = requests.post(url, auth=auth, data=data)
+    response.raise_for_status()
 # @crud.route('/<id>/edit', methods=['GET', 'POST'])
 # def edit(id):
 #     book = get_model().read(id)
