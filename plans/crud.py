@@ -23,7 +23,6 @@ crud = Blueprint('crud', __name__)
 # [START index]
 @crud.route("/")
 def index():
-    send_simple_message('ankitgupta00@gmail.com')
     family_id = request.args.get('family', None)
     if family_id:
         family_id = family_id.encode('utf-8')
@@ -57,7 +56,9 @@ def start():
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.start'))
-
+    
+    send_welcome_email(family)
+    
     return render_template("start.html", family=family)
 
 # [END start]
@@ -123,6 +124,15 @@ def view_plan(id):
 # [START addplan]
 @crud.route('/addplan', methods=['GET', 'POST'])
 def addplan():
+    family_id = request.args.get('family', None)
+    if family_id:
+        family_id = family_id.encode('utf-8')
+    family = get_model().item('Family', id=family_id)
+
+    # Edge case when an incorrect family_id is supplied
+    if not family and family_id:
+        return redirect(url_for('.start'))
+
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
         plan_id = None
@@ -132,17 +142,11 @@ def addplan():
 
         if 'save' in request.form:
             return redirect(url_for('.addplan', family=plan['family_id'], plan=plan['id']))
+        elif 'save_and_continue_later' in request.form:
+            send_plan_link_email(family, plan)
+            return redirect(url_for('.addplan', family=plan['family_id'], plan=plan['id']))
         else:
             return redirect(url_for('.plans', family=plan['family_id']))
-
-    family_id = request.args.get('family', None)
-    if family_id:
-        family_id = family_id.encode('utf-8')
-    family = get_model().item('Family', id=family_id)
-
-    # Edge case when an incorrect family_id is supplied
-    if not family and family_id:
-        return redirect(url_for('.start'))
 
     plan_id = request.args.get('plan', None)
     if plan_id:
@@ -428,6 +432,8 @@ def recommendation():
     # print(human_readable)
     # recommendation[text, plan, cost]
     # low_recomentation[text, cost, components=[recommendation]]
+    send_recommendation_email(family)
+
     return render_template(
         "recommendation.html",
         family=family,
@@ -588,14 +594,65 @@ def capitalize_first(text):
 
 MAILGUN_DOMAIN_NAME = 'sandbox06997d18109746479b9f130895af8afe.mailgun.org'
 MAILGUN_API_KEY = 'key-ead29a6a186d7b7b472a39b2e7777597'
-def send_simple_message(to):
+SERVICE_NAME = 'Plan Selector'
+def send_welcome_email(family):
+    subject = 'Welcome to Plan Selector'
+    text = "Hello! Welcome to Plan Selector, the easiest way to find a health plan optimized for your entire family."
+    text += "\n\n"
+    text += "Visit your personalized dashboard by clicking this link: http://plan-selector-ninja.appspot.com/plans/plans?family="+str(family.key.id)
+    text += "\n\n"
+    text += "Once you have all the information at hand, you will need ~30 mins to add all your plans and get a recommendation from our trusted algorithms."
+    text += "\n\n"
+    text += "Feel free to reach out if you have any questions!"
+    text += "\n\n"
+    text += "Best,"
+    text += "\n"
+    text += "Amit and Ankit."
+    text += "\n"
+    send_email(to="ankitgupta00@gmail.com", subject=subject, text=text)
+
+def send_recommendation_email(family):
+    subject = 'Recommendation From Plan Selector'
+    text = "Hello,"
+    text += "\n\n"
+    text += "Thank you for using Plan Selector, the easiest way to find a health plan optimized for your entire family."
+    text += "\n\n"
+    text += "Visit your personalized recommendations by clicking this link: http://plan-selector-ninja.appspot.com/plans/recommendations?family="+str(family.key.id)
+    text += "\n\n"
+    text += "If you like our site, please share it with your friends, family and the world :)"
+    text += "\n\n"
+    text += "Best,"
+    text += "\n"
+    text += "Amit and Ankit."
+    text += "\n"
+    send_email(to="ankitgupta00@gmail.com", subject=subject, text=text)
+
+def send_plan_link_email(family, plan):
+    subject = 'Your health plan in Plan Selector'
+    text = "Hello,"
+    text += "\n\n"
+    text += "Thank you for using Plan Selector, the easiest way to find a health plan optimized for your entire family."
+    text += "\n\n"
+    text += "The plan you just entered is saved. You can update the plan via this link: http://plan-selector-ninja.appspot.com/plans/addplan?family="+str(family.key.id)+"&plan="+str(plan.key.id)
+    text += "\n\n"
+    text += "Visit your personalized dashboard by clicking this link: http://plan-selector-ninja.appspot.com/plans/plans?family="+str(family.key.id)
+    text += "\n\n"
+    text += "If you like our site, please share it with your friends, family and the world :)"
+    text += "\n\n"
+    text += "Best,"
+    text += "\n"
+    text += "Amit and Ankit."
+    text += "\n"
+    send_email(to="ankitgupta00@gmail.com", subject=subject, text=text)
+
+def send_email(to, subject, text):
     url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
     auth = ('api', MAILGUN_API_KEY)
     data = {
-        'from': 'Mailgun User <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
+        'from': 'Plan Selector <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
         'to': to,
-        'subject': 'Simple Mailgun Example',
-        'text': 'Plaintext content',
+        'subject': subject,
+        'text': text
     }
 
     response = requests.post(url, auth=auth, data=data)
