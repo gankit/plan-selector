@@ -20,9 +20,12 @@
 {% block content %}
 
 <div class="container">
-<h1 class="display-4">Available Plans</h1>
+<h1 class="display-4 page-title">Available Plans</h1>
 <br>
-<a role="button" href="/plans/addplan?family={{family.key.id}}" class="btn btn-primary btn-lg">Add plan</a>
+<div>
+<a role="button" href="/plans/addplan?family={{family.key.id}}" class="btn btn-outline-success btn-lg">Add plan</a>
+<a href="/plans/recommendation?family={{family.key.id}}" role="button" class="btn btn-primary btn-lg">Find the best plan for me</a>
+</div>
 
 
 <div class="plan_comparison container">
@@ -55,6 +58,8 @@
   <div class="row">
     <div class="col-4">
       <b><a href="/plans/{{plan.key.id}}">{{plan.insurer_name}} - {{plan.plan_name}}</a><br>
+      <small>Offered by <i>{{plan.employer_name}}</i></small><br>
+
         {% if plan.hsa_qualified == 'yes' %}<small class="text-muted">HSA qualified.</small> {% endif %}
         {% if plan.oon_coverage_included == 'yes' %}<small class="text-muted">Includes out of network coverage.</small>{% endif %}
       </b>
@@ -63,8 +68,6 @@
   </div>
 {% endfor %}  
 </div>
-
-<a href="/plans/recommendation?family={{family.key.id}}" role="button" class="btn btn-primary btn-lg">Find the best plan for me</a>
 <br>
 <br>
 <script type="text/javascript" src="https://dl.dropboxusercontent.com/u/1096641/d3-tip.js"></script>

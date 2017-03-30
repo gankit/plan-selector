@@ -19,7 +19,7 @@
 
 {% block content %}
 <div class="container">
-<h1 class="display-4">Enter plan information</h1>
+<h1 class="display-4 page-title">Enter plan information</h1>
 <br>
 <form method="POST" enctype="multipart/form-data" data-toggle="validator" role="form" id="input_form">
 
@@ -54,7 +54,7 @@
         </div>
       </div>
       <div class="help-block with-errors form-control-feedback"></div>      
-      <small id="plan_source_other_warning_tip" class="form-text text-muted text-danger {% if plan.plan_source == 'other' %} hidden-xl-down {% endif %}">We currently don't support plan optimization for Medicaid plans. Please consult someone else for this decision.</small>
+      <small id="plan_source_other_warning_tip" class="form-text text-muted text-danger {% if plan.plan_source != 'other' %} hidden-xl-down {% endif %}">We currently don't support plan optimization for Medicaid plans. Please consult someone else for this decision.</small>
     </div>
   </div>
 
@@ -342,8 +342,11 @@
 
   {% if family %} <input type="hidden" name="family_id" value="{{family.key.id}}"/> {% endif %}
   {% if plan %} <input type="hidden" name="plan_id" value="{{plan.key.id}}"/> {% endif %}
-  <button type="submit" name="save" class="btn btn-outline-success">Save</button>
-  <button type="submit" name="next" class="btn btn-primary">Next</button>
+  <div>
+    <button type="submit" name="save" class="btn btn-outline-success">Save</button>
+    <button type="submit" name="save_and_continue" class="btn btn-outline-info">Save and continue later</button>
+    <button type="submit" name="next" class="btn btn-primary">Next</button>
+  </div>
 </form>
 
 <div class="copy invisible">
@@ -404,9 +407,30 @@
           var matchValue = $el.data("notequals")
           return ($el.val() === matchValue);
         }
-      }
+      },
+      disable: false
     });
 
+    // click on submit button with action "Change"
+    $("button[type=submit]").on("click", function () {
+        $('#input_form').data("submit-clicked", $(this).attr("name"));
+    });
+
+    $('#input_form').validator().on('submit', function (e) {
+      if (e.isDefaultPrevented()) {
+        // handle the invalid form...
+        var name = $('#input_form').data("submit-clicked");
+        if (name === "save") {
+        }
+        else if (name === "save_and_continue") {
+        }
+        else if (name === "next") {
+
+        }
+      } else {
+        // everything looks good!
+      }
+    })
   });
 
   function show_or_hide_plan_source_other_dropdown() {

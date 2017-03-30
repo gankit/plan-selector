@@ -20,8 +20,8 @@
 
 {% block content %}
 <div class="container">
-<h1 class="display-4">Our Recommendation</h1>
- <p class="lead">We are looking for the best plan combination that covers you{% if family.marital_status == 'married' and family.children|int > 0 %}, your spouse and your children{% elif family.marital_status == 'married' %} and your spouse{% elif family.children|int > 0 %} and your children{% endif %}.</p>
+<h1 class="display-4 page-title">Our Recommendation</h1>
+ <p class="lead">We are looking for the best plan combination that covers <b>you{% if family.marital_status == 'married' and family.children|int > 0 %}, your spouse and your children{% elif family.marital_status == 'married' %} and your spouse{% elif family.children|int > 0 %} and your children{% endif %}.</b></p>
 <br>
 <div class="row">
 	<div class="col-6"><h4>What is your expected healthcare utilization?</h4></div>
@@ -73,7 +73,7 @@
       <td>{{option.text}}</td>
       <td>${{option.price|round(2, 'ceil')}}</td>
       <td>${{option.cost|round(2, 'ceil')}}</td>
-      <td>${{option.savings|round(2, 'ceil')}}</td>
+      <td>{% if option.savings == 0 %} N/A {% else %} ${{option.savings|round(2, 'ceil')}} {% endif %}</td>
     </tr>
 {% endfor %}    
   </tbody>
