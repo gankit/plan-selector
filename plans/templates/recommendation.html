@@ -64,6 +64,7 @@
       <th>Option</th>
       <th>Price</th>
       <th>Expected Cost</th>
+      <th>Saving</th>
     </tr>
   </thead>
   <tbody>
@@ -72,6 +73,7 @@
       <td>{{option.text}}</td>
       <td>${{option.price|round(2, 'ceil')}}</td>
       <td>${{option.cost|round(2, 'ceil')}}</td>
+      <td>${{option.savings|round(2, 'ceil')}}</td>
     </tr>
 {% endfor %}    
   </tbody>

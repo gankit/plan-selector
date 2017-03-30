@@ -367,7 +367,7 @@ def recommendation():
         human_readable[util]['option_id'] = option_id
         human_readable[util]['text'] = overall_text
         human_readable[util]['recs'] = recs
-        human_readable[util]['cost'] = str(overall_cost)
+        human_readable[util]['cost'] = overall_cost
 
     options = {'low':[], 'med':[], 'high':[]}
     if me_employer is not None and spouse_employer is None:
@@ -389,6 +389,7 @@ def recommendation():
 
                 rec['text'] = text
                 rec['cost'] = cost
+                rec['savings'] = cost - human_readable[util]['cost']
                 rec['price'] = price[plan_id][top_coverage]
                 options[util].append(rec)
     elif me_employer is not None and spouse_employer is not None:
@@ -420,6 +421,7 @@ def recommendation():
                     rec['recommended'] = 'yes'
                 rec['text'] = text
                 rec['cost'] = cost
+                rec['savings'] = cost - human_readable[util]['cost']
                 rec['price'] = p
                 options[util].append(rec)
     # print(options)
