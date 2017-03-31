@@ -608,56 +608,57 @@ def capitalize_first(text):
 
 MAILGUN_DOMAIN_NAME = 'sandbox06997d18109746479b9f130895af8afe.mailgun.org'
 MAILGUN_API_KEY = 'key-ead29a6a186d7b7b472a39b2e7777597'
-SERVICE_NAME = 'Plan Selector'
 def send_welcome_email(family):
-    subject = 'Welcome to Plan Selector'
-    text = "Hello! Welcome to Plan Selector, the easiest way to find a health plan optimized for your entire family."
+    subject = 'Welcome to Plan Guide'
+    text = "Hey there! Welcome to Plan Guide, the smartest way to find a health plan optimized for your entire family."
     text += "\n\n"
-    text += "Visit your personalized dashboard by clicking this link: http://plan-selector-ninja.appspot.com/plans/plans?family="+str(family.key.id)
+    text += "You can always visit your personalized dashboard by clicking this link: http://plan.guide/plans/plans?family="+str(family.key.id)
     text += "\n\n"
-    text += "Once you have all the information at hand, you will need ~30 mins to add all your plans and get a recommendation from our trusted algorithms."
+    text += "Once you have all the information at hand, you will need ~20 mins to add all your plans and get a recommendation from our trusted algorithms."
     text += "\n\n"
-    text += "Feel free to reach out if you have any questions!"
+    text += "Feel free to reach out if you have any questions or feedback for us."
     text += "\n\n"
     text += "Best,"
     text += "\n"
-    text += "Amit and Ankit."
+    text += "The Plan Guide Team"
     text += "\n"
-    send_email(to="amit.ghorawat@gmail.com", subject=subject, text=text)
+    send_email(to=family['email'], subject=subject, text=text)
 
 def send_recommendation_email(family):
-    subject = 'Recommendation From Plan Selector'
+    subject = 'Your personalized recommendation from Plan Guide'
     text = "Hello,"
     text += "\n\n"
-    text += "Thank you for using Plan Selector, the easiest way to find a health plan optimized for your entire family."
+    text += "Thank you for using Plan Guide, the smartest way to find a health plan optimized for your entire family."
     text += "\n\n"
-    text += "Visit your personalized recommendations by clicking this link: http://plan-selector-ninja.appspot.com/plans/recommendations?family="+str(family.key.id)
+    text += "Visit your personalized recommendations by clicking this link: http://plan.guide/plans/recommendations?family="+str(family.key.id)
     text += "\n\n"
     text += "If you like our site, please share it with your friends, family and the world :)"
     text += "\n\n"
+    text += "Also, we would love to hear from you - any feedback (good or bad) makes us better."
+    text += "\n\n"
     text += "Best,"
     text += "\n"
-    text += "Amit and Ankit."
+    text += "The Plan Guide Team"
     text += "\n"
-    send_email(to="ankitgupta00@gmail.com", subject=subject, text=text)
+    send_email(to=family['email'], subject=subject, text=text)
 
 def send_plan_link_email(family, plan):
-    subject = 'Your health plan in Plan Selector'
+    subject = 'Plan Guide: Pick up where you left ...'
     text = "Hello,"
     text += "\n\n"
-    text += "Thank you for using Plan Selector, the easiest way to find a health plan optimized for your entire family."
+    text += "Thank you for using Plan Guide, the smartest way to find a health plan optimized for your entire family."
     text += "\n\n"
-    text += "The plan you just entered is saved. You can update the plan via this link: http://plan-selector-ninja.appspot.com/plans/addplan?family="+str(family.key.id)+"&plan="+str(plan.key.id)
+    text += "The plan you just entered is saved. You can update the plan via this link: http://plan.guide/plans/addplan?family="+str(family.key.id)+"&plan="+str(plan.key.id)
     text += "\n\n"
-    text += "Visit your personalized dashboard by clicking this link: http://plan-selector-ninja.appspot.com/plans/plans?family="+str(family.key.id)
+    text += "Visit your personalized dashboard by clicking this link: http://plan.guide/plans/plans?family="+str(family.key.id)
     text += "\n\n"
     text += "If you like our site, please share it with your friends, family and the world :)"
     text += "\n\n"
     text += "Best,"
     text += "\n"
-    text += "Amit and Ankit."
+    text += "The Plan Guide Team"
     text += "\n"
-    send_email(to="ankitgupta00@gmail.com", subject=subject, text=text)
+    send_email(to=family['email'], subject=subject, text=text)
 
 def send_email(to, subject, text):
     try:

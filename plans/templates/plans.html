@@ -26,7 +26,21 @@
 <a role="button" href="/plans/addplan?family={{family.key.id}}" class="btn btn-outline-success btn-lg">Add plan</a>
 <a href="/plans/recommendation?family={{family.key.id}}" role="button" class="btn btn-primary btn-lg">Find the best plan for me</a>
 </div>
-
+{% if plans_display_data|length == 0 %}
+<div class="bg-faded start-tip-block">
+<p class="lead">
+Before you start - we recommend that you gather the following information. It will really go by quickly if you have the right information handy.
+</p>
+<p>For the insurance plans available to you and your spouse (if you are married), please keep the following handy:</p>
+<ul>
+<li>Premiums</li> 
+<li>Deductible</li>
+<li>Out-of-pocket maximum</li>
+<li>Any employer contribution to savings accounts</li>
+<li>Any wellness / other bonuses you might be eligible to earn</li>
+</ul>
+</div>
+{% else %}
 
 <div class="plan_comparison container">
   <div class="row">
@@ -68,6 +82,7 @@
   </div>
 {% endfor %}  
 </div>
+{% endif %}
 <br>
 <br>
 <script type="text/javascript" src="https://dl.dropboxusercontent.com/u/1096641/d3-tip.js"></script>
