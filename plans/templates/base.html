@@ -16,7 +16,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Plan Selector</title>
+    <title>Plan Guide</title>
     <!-- These meta tags come first. -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -39,22 +39,22 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
             ☰
         </button>
-        <a class="navbar-brand page-scroll mr-3" href="/plans{% if family %}?family={{family.key.id}} {% endif %}">Plan Selector</a>
+        <a class="navbar-brand page-scroll mr-3" href="/plans{% if family %}?family={{family.key.id}} {% endif %}">Plan Guide</a>
         <div class="collapse navbar-collapse" id="collapsingNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item {% if active_page == 'start' %} active {% endif %}">
-                    <a class="nav-link page-scroll pr-3 {% if not family %} disabled {% endif %}" href="/plans/start{% if family %}?family={{family.key.id}} {% endif %}">Who needs coverage?</a>
+                    <a class="nav-link page-scroll pr-3 {% if not family.me_age %} disabled {% endif %}" href="/plans/start{% if family %}?family={{family.key.id}} {% endif %}">Who needs coverage?</a>
                 </li>
                 <li class="nav-item {% if active_page == 'plans' %} active {% endif %}">
-                    <a class="nav-link page-scroll pr-3 {% if not family %} disabled {% endif %}" href="/plans/plans{% if family %}?family={{family.key.id}} {% endif %}">Available Plans</a>
+                    <a class="nav-link page-scroll pr-3 {% if not family.me_age %} disabled {% endif %}" href="/plans/plans{% if family %}?family={{family.key.id}} {% endif %}">Available Plans</a>
                 </li>
                 <li class="nav-item {% if active_page == 'recommendation' %} active {% endif %}">
-                    <a class="nav-link page-scroll pr-3 {% if not family %} disabled {% endif %}" href="/plans/recommendation{% if family %}?family={{family.key.id}} {% endif %}">Recommendation</a>
+                    <a class="nav-link page-scroll pr-3 {% if not family.me_age %} disabled {% endif %}" href="/plans/recommendation{% if family %}?family={{family.key.id}} {% endif %}">Recommendation</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link page-scroll" href="mailto:feedback@plan.guide?subject=Help%20to%20select%20plans">Contact Us</a>
+                    <a class="nav-link page-scroll" href="mailto:feedback@plan.guide?subject=Help%20with%20selecting%20plans">Contact Us</a>
                 </li>
             </ul>
         </div>
@@ -83,17 +83,14 @@
     </div>
   </div>
 </div>
-<!--     <nav class="navbar navbar-light bg-faded">
-      <h1 class="navbar-brand mb-0">Plan Selector</h1>
-    </nav>
- -->    {% block content %}{% endblock %}
+{% block content %}{% endblock %}
  <footer id="footer" class="bg-inverse">
     <div class="container">
         <div class="row">
             <div class="col-10 col-sm-10 column">
                 <h6 class="text-uppercase">About</h6>
                 <p class="about-text">
-                Plan Selector is made with lots of love by Amit Ghorawat and Ankit Gupta. We are passionate about helping people access high quality healthcare, the first step is picking the best plan. Plase send us any feedback at feedback@plan.guide. We hope you enjoy our site!  
+                Plan Guide is a side project made with lots of love by Amit Ghorawat and Ankit Gupta. We are passionate about helping people access high quality healthcare, the first step is picking the best plan. Plase send us any feedback at feedback@plan.guide. We hope you enjoy our site!  
                 </p>
             </div>
             <div class="col-4 col-sm-2 text-xl-left">
@@ -121,11 +118,11 @@ $(document).ready(function() {
   </body>
 </html>
 
-<!-- http://localhost:8080/plans/start?family=5745865499082752
-http://localhost:8080/plans/addplan?family=5745865499082752
-http://localhost:8080/plans/addplan?family=5745865499082752&plan=5075880531460096
-http://localhost:8080/plans/plans?family=5745865499082752 
-http://localhost:8080/plans/recommendation?family=5745865499082752 -->
+<!-- http://localhost:8080/plans/start?family=5724160613416960
+http://localhost:8080/plans/addplan?family=5724160613416960
+http://localhost:8080/plans/addplan?family=5724160613416960&plan=5075880531460096
+http://localhost:8080/plans/plans?family=5724160613416960 
+http://localhost:8080/plans/recommendation?family=5724160613416960 -->
 
 
 <!-- http://plan-selector-ninja.appspot.com/plans/start?family=5745865499082752

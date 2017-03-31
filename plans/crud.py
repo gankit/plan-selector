@@ -62,13 +62,14 @@ def start():
 
     if family_id:
         family_id = family_id.encode('utf-8')
+    else:
+        return redirect(url_for('.index'))
 
     family = get_model().item('Family', id=family_id)
 
-    print(family)
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
-        return redirect(url_for('.start'))
+        return redirect(url_for('.index'))
     
     if family:
         send_welcome_email(family)
@@ -85,6 +86,15 @@ def plans():
         family_id = family_id.encode('utf-8')
 
     plans, family = get_model().plans(family_id=family_id)
+
+    # Edge case when an incorrect family_id is supplied
+    if not family and family_id:
+        return redirect(url_for('.start'))
+
+    # When family information is incomplete
+    if not ('me_age' in family) and family_id:
+        return redirect(url_for('.start', family=family_id))
+
 
     display_coverage_type = 'ee'
     display_coverage_type_text = 'yourself'
@@ -115,9 +125,6 @@ def plans():
         new_plan['er_funding'] = get_er_fundings(plan, [display_coverage_type])[display_coverage_type]
         plans_display_data.append(new_plan)
     plans_display_data.sort(key=lambda x:float(x['annual_premium']));
-    # Edge case when an incorrect family_id is supplied
-    if not family and family_id:
-        return redirect(url_for('.start'))
 
     return render_template(
         "plans.html",
@@ -131,8 +138,24 @@ def plans():
 
 @crud.route('/<id>')
 def view_plan(id):
-    plan = get_model().item('Plan', id=id)
-    return redirect(url_for('.addplan', family=plan['family_id'], plan=id))
+    try:
+        plan = get_model().item('Plan', id=id)
+        return redirect(url_for('.addplan', family=plan['family_id'], plan=id))
+    except:
+        family_id = request.args.get('family', None)
+        if family_id:
+            family_id = family_id.encode('utf-8')
+
+            family = get_model().item('Family', id=family_id)
+
+            # Edge case when an incorrect family_id is supplied
+            if not family:
+                return redirect(url_for('.start'))
+
+            # When family information is incomplete
+            if not 'me_age' in family:
+                return redirect(url_for('.start', family=family_id))
+        return redirect(url_for('.start'))
 
 
 # [START addplan]
@@ -146,6 +169,10 @@ def addplan():
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.start'))
+
+    # When family information is incomplete
+    if not ('me_age' in family) and family_id:
+        return redirect(url_for('.start', family=family_id))
 
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
@@ -190,6 +217,10 @@ def recommendation():
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.start'))
+
+    # When family information is incomplete
+    if not ('me_age' in family) and family_id:
+        return redirect(url_for('.start', family=family_id))
 
     spreadsheetId = '1PDdMliNoxzSJONZJnKg9AwyR5HAPu1_UWxMqib3JyAg'
     rangeName = 'Utilization data!A2:E'
@@ -606,7 +637,7 @@ def get_plan_by_id(plans, plan_id):
 def capitalize_first(text):
     return text[0].capitalize() + text[1:]
 
-MAILGUN_DOMAIN_NAME = 'sandbox06997d18109746479b9f130895af8afe.mailgun.org'
+MAILGUN_DOMAIN_NAME = 'mail.plan.guide'
 MAILGUN_API_KEY = 'key-ead29a6a186d7b7b472a39b2e7777597'
 def send_welcome_email(family):
     subject = 'Welcome to Plan Guide'
@@ -630,7 +661,7 @@ def send_recommendation_email(family):
     text += "\n\n"
     text += "Thank you for using Plan Guide, the smartest way to find a health plan optimized for your entire family."
     text += "\n\n"
-    text += "Visit your personalized recommendations by clicking this link: http://plan.guide/plans/recommendations?family="+str(family.key.id)
+    text += "Visit your personalized recommendations by clicking this link: http://plan.guide/plans/recommendation?family="+str(family.key.id)
     text += "\n\n"
     text += "If you like our site, please share it with your friends, family and the world :)"
     text += "\n\n"
@@ -665,7 +696,7 @@ def send_email(to, subject, text):
         url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
         auth = ('api', MAILGUN_API_KEY)
         data = {
-            'from': 'Plan Selector <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
+            'from': 'Plan Guide <admin@plan.guide>',
             'to': to,
             'subject': subject,
             'text': text
