@@ -71,6 +71,7 @@
   </div>
 
   {% if family %} <input type="hidden" name="id" value="{{family.key.id}}"/> {% endif %}
+  {% if family %} <input type="hidden" name="email" value="{{family.email}}"/> {% endif %}
   <button type="submit" name="save" class="btn btn-outline-success">Save</button>
   <button type="submit" name="next" class="btn btn-primary">Next</button>
 </form>

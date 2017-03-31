@@ -55,7 +55,7 @@ def start():
         if 'save' in request.form:
             return redirect(url_for('.start', family=family['id']))
         else:
-            return redirect(url_for('.addplan', family=family['id']))
+            return redirect(url_for('.plans', family=family['id']))
 
     family_id = request.args.get('family', None)
 
@@ -95,6 +95,7 @@ def plans():
     if not ('me_age' in family) and family_id:
         return redirect(url_for('.start', family=family_id))
 
+    print(family)
 
     display_coverage_type = 'ee'
     display_coverage_type_text = 'yourself'
@@ -656,6 +657,7 @@ def send_welcome_email(family):
     send_email(to=family['email'], subject=subject, text=text)
 
 def send_recommendation_email(family):
+    print(family)
     subject = 'Your personalized recommendation from Plan Guide'
     text = "Hello,"
     text += "\n\n"

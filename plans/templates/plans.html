@@ -23,15 +23,18 @@
 <h1 class="display-4 page-title">Available Plans</h1>
 <br>
 <div>
-<a role="button" href="/plans/addplan?family={{family.key.id}}" class="btn btn-outline-success btn-lg">Add plan</a>
+<a role="button" href="/plans/addplan?family={{family.key.id}}" class="btn btn-outline-success btn-lg">Add a plan</a>
+{% if plans_display_data|length > 0 %}
 <a href="/plans/recommendation?family={{family.key.id}}" role="button" class="btn btn-primary btn-lg">Find the best plan for me</a>
+{% endif %}
 </div>
 {% if plans_display_data|length == 0 %}
+<br>
 <div class="bg-faded start-tip-block">
-<p class="lead">
+<p class="lead text-danger">
 Before you start - we recommend that you gather the following information. It will really go by quickly if you have the right information handy.
 </p>
-<p>For the insurance plans available to you and your spouse (if you are married), please keep the following handy:</p>
+<p>For the insurance plans available to you{% if family.marital_status == 'married' %} and your spouse{% endif %}, please keep the following handy:</p>
 <ul>
 <li>Premiums</li> 
 <li>Deductible</li>
@@ -41,7 +44,6 @@ Before you start - we recommend that you gather the following information. It wi
 </ul>
 </div>
 {% else %}
-
 <div class="plan_comparison container">
   <div class="row">
   <p class="col lead">Comparison of all your plans to cover <b>{{display_coverage_type_text}}</b>.</p>
