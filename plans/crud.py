@@ -489,6 +489,24 @@ def recommendation():
         options=options)
 # [END recommendation]
 
+# [START glossary]
+@crud.route("/glossary")
+def glossary():
+    family_id = request.args.get('family', None)
+    if family_id:
+        family_id = family_id.encode('utf-8')
+    family = get_model().item('Family', id=family_id)
+
+    # Edge case when an incorrect family_id is supplied
+    if not family and family_id:
+        return redirect(url_for('.start'))
+
+    return render_template(
+        "glossary.html",
+        family=family)
+
+# [END glossary]
+
 def expected_utilization(data, age, gender):
     g = 'Child'
     if gender == 'male':

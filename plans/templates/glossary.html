@@ -1,0 +1,142 @@
+{#
+# Copyright 2015 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#}
+
+{# [START form] #}
+{% extends "base.html" %}
+{% set active_page = "glossary" %}
+
+{% block content %}
+<div class="container">
+<h1 class="display-4 page-title">Demystifying health insurance</h1>
+ <p class="lead">Stuck with health insurance terminology? Let this page be a friendly guide!</p>
+<br>
+<h4>Different types of plans</h4>
+There are three different types of plans: HMOs, EPOs and Narrow network plans. All these plans include HMOs cover emergency care anywhere - even outside the network.
+<br>
+<br>
+<ol>
+<li><b>HMO (Health Maintenance Organization)</b> plans are typically most restrictive - you can get care only from a specific set of providers and have to always first consult a primary care physician (that you get to pick from a given set). These plans are able to save you money by directing more volume to a smaller set of healthcare providers. Some well managed HMOs like Kaiser are adored by their users.</li><br>
+<li><b>EPO (Exclusive Provider Organizations) or Narrow network plans</b> are similar where access is restricted to select providers but may not have the constraint of consulting a primary care physician first each time.<br>
+It's safer to not pick an HMO or EPO / narrow-network plan if you care about having broad access e.g. being able to go to best cancer care facility in the country.</li><br>
+<li><b>PPO (Preferred Provider Organization)</b> plans offer broader access. They too have a preferred network (often referred to as 'in-network' but also allow you to access providers outside of that network (but you may have to pay more). These plans are more expensive than HMOs usually but offer greater flexibility.</li>
+</ol>
+<br>
+<h4>High deductible health plans</h4>
+<p>Also called Consumer Driven (or Directed) Health Plans are plans with a 'deductible'. This is a threshold wherein you are on the hook for all healthcare expenses till you have spent an amount up to the threshold (referred to as meeting the deductible). This is not that different from some auto insurance where you are on the hook for the first $1000.</p>
+<p>The higher the deductible, the cheaper the plan. These plans often allow you to use a savings instrument called Health Savings Account that can be used to stash away pre-tax dollars to use for healthcare expenses. These plans are great for people who can afford to pay the deductible when needed. You should stay away from these plans if you think paying the deductible is going to create a significant financial hardship for you.</p>
+<p>Plans typically have different values of the deductible based on who you cover (employee only or including spouse / children) and whether it's for getting care at the preferred healthcare provider network or not (In-network vs. out of network deductible).</p>
+
+<br>
+<h4>Premiums</h4>
+<p>This is the money paid to the insurer in return for getting a health plan. Often times what you see is the portion of the premiums that you as an employee are on the hook for. Do remember that your employer often pays for a large part of the premiums that may not be very apparent to you.</p>
+
+<br>
+<h4>Out-Of-Pocket Maximum (in-network / out of network)</h4>
+<p>Plans have a max limit of how much money you might have to spend out of your pocket regardless of how much care you might need in a year. Currently the regulations cap this amount at ~$7K for employee only and $14K for employee + family coverage. This amount typically includes what you might have to spend to meet your deductible but does not include any premiums you might be paying.</p>
+
+
+<br>
+<h4>Co-insurance</h4>
+<p>Coinsurance is your share of the costs of a health care service. It's usually figured as a percentage of the amount allowed to be charged for services. You start paying coinsurance after you've paid your plan's deductible and stop paying it once you have hit the out-of-pocket maximum.</p>
+
+<br>
+<h4>Copay</h4>
+<p>In certain plans (typically without deductibles), you instead pay a copay or a fixed amount for each type of service. e.g. $30 for a physician visit.</p>
+
+<br>
+<h4>Savings Accounts</h4>
+There are three main types of savings accounts
+<br>
+<br>
+<ol>
+<li><b>HSA (Health Savings Accounts):</b> Anyone with a high deductible health plan can put pre-tax money (up to a certain annual limit) away in an HSA. This account rolls over from year to year so you don't lose unused funds. Additional surplus money in the account can be invested in certain types of securities. If the money is used for qualified medical expenses then you don't even pay taxes when you withdraw the money (unlike a 401K). This account is also tied to the employee so you can take it with you when you switch jobs. An employer may also seed some money in to this account. Unlike Flexible Spending Accounts (FSAs) or HRAs, you can use funds from your HSA to pay for non-healthcare expenses; however, that money will be taxed, and you'll be charged a 20% tax penalty if you're younger than 65.
+</li>
+<br>
+<li><b>Medical FSA (Flexible Savings Account) or HCSA (Health Care Spending account):</b> This is setup by the employer but you can contribute pre-tax dollars (up to a certain annual limit) in to this account. Unlike an HSA, this is a 'use-it or lose-it' account meaning that all the unused funds at the end of the year are forfeited. There are other types of FSA accounts like Transit, Parking, and Dependent Care FSAs.
+</li>
+<br>
+<li><b>HRA (Health Reimbursement Account) or MRA (Medical Reimbursement Account):</b> This is setup by the employer and only the employer can contribute money in to this account. Like an FSA, this is an 'Use-it or lose-it' account meaning that all the unused funds a the end of the year are forfeited.</li>
+</ol>
+There are several IRS rules around these accounts e.g. You cannot simultaneously fund a Medical FSA and HSA or an HRA and an HSA account.
+<br>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Account Feature</th>
+      <th>HSA</th>
+      <th>HRA</th>
+      <th>FSA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td scope="row">Use it to pay your deductibles / co-insurance /copays</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td scope="row">Who owns the account?</td>
+      <td>Employee</td>
+      <td>Employer</td>
+      <td>Employer</td>
+    </tr>
+    <tr>
+      <td scope="row">It can be used without any taxes for qualified medical expenses</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td scope="row">It can be used with taxes (and a penalty if you are less than 65 years) for non-medical expenses</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td scope="row">You can invest the money in certain securities</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td scope="row">You can roll-over any unused money to the next year</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td scope="row">Who can contribute to the account?</td>
+      <td>Employee or Employer</td>
+      <td>Employer only</td>
+      <td>Employee only; Employers can match up to $500</td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+<h4>Employer contribution to savings accounts</h4>
+<p>Employers often contribute dollars to HSA (Health Savings Account) or HRA (Health Reimbursement Account) to help employees meet some of their deductible / co-insurance expenses. This is an important factor to consider when selecting a health plan because your employer might only be contributing money if you pick certain plans. The details about these contributions can often be found inside your annual enrollment packet or an enrollment website.</p>
+
+<br>
+<h4>Wellness / other bonuses or penalties</h4>
+<p>Employers often setup programs for employees to meet certain goals and earn bonuses or avoid paying penalties. Some examples include getting an annual bio-metrics text, quitting smoking, or participating in weight loss programs. We will assume that you will earn a 100% of these bonuses and won't need to incur any penalties . These programs are almost always good for your well-being and save you some money. The details about these bonuses can often be found inside your annual enrollment packet or an enrollment website.</p>
+
+<br>
+<br>
+</div>
+{% endblock %}
+{# [END form] #}
