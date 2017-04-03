@@ -21,6 +21,11 @@
 {% block content %}
 <div class="container">
 <h1 class="display-4 page-title">Our Recommendation</h1>
+{% if plans|length == 0 %}
+<p class="lead">Please add your plans before we can provide you with a recommendation</p>
+<a role="button" href="/plans/addplan?family={{family.key.id}}" class="btn btn-outline-success btn-lg">Add a plan</a>
+{% else %}
+
  <p class="lead">We are looking for the best plan combination that covers <b>you{% if family.marital_status == 'married' and family.children|int > 0 %}, your spouse and your children{% elif family.marital_status == 'married' %} and your spouse{% elif family.children|int > 0 %} and your children{% endif %}.</b></p>
 <br>
 <div class="row">
@@ -86,6 +91,9 @@
 </table>
 </div>
 {% endfor %}
+{% endif %}
+<br>
+<br>
 <br>
 </div>
 <script type="text/javascript">

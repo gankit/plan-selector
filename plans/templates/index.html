@@ -50,7 +50,7 @@ coverage through multiple sources e.g. you and your spouse's employers.</p>
     <form method="POST" enctype="multipart/form-data" data-toggle="validator" role="form" id="input_form">
         <div class="form-group">
             <input type="email" name="email" id="index-email-field" value="{{family.email}}" placeholder="Enter your email to get started" class="form-control d-inline-block form-control-lg" required/>
-            <button class="btn btn-primary btn-lg d-inline-block" href="start{% if family %}?family={{family.key.id}} {% endif %}" role="button">Get started</button>
+            <button type="submit" class="btn btn-primary btn-lg d-inline-block">Get started</button>
             <div class="help-block with-errors form-control-feedback"></div>      
 {% if family_from_cookie %}
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
