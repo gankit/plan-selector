@@ -44,7 +44,6 @@ def index():
         else:
             #create a family
             family = get_model().update('Family', data=data, id=None)
-            send_welcome_email(family)
             resp = make_response(redirect(url_for('.start', family=family['id'])))
             resp.set_cookie('family_id_cookie', str(family['id']).encode('utf-8'))
             return resp
@@ -64,7 +63,6 @@ def start():
         if 'save' in request.form:
             return redirect(url_for('.start', family=family['id']))
         else:
-            send_welcome_email(family)
             return redirect(url_for('.plans', family=family['id']))
 
     family_id = request.args.get('family', None)
@@ -131,14 +129,21 @@ def plans():
         new_plan['er_funding'] = get_er_fundings(plan, [display_coverage_type])[display_coverage_type]
         plans_display_data.append(new_plan)
     plans_display_data.sort(key=lambda x:float(x['annual_premium']));
-
-    return render_template(
+            
+    resp = make_response(render_template(
         "plans.html",
         family=family,
         plans=plans,
         display_coverage_type=display_coverage_type,
         display_coverage_type_text=display_coverage_type_text,
-        plans_display_data=plans_display_data)
+        plans_display_data=plans_display_data))
+
+    sent_welcome = request.cookies.get('sent_welcome')
+    if not sent_welcome:
+        success = send_welcome_email(family)
+        if success:
+            resp.set_cookie('sent_welcome', 'yes')
+    return resp
 # [END plans]
 
 
