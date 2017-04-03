@@ -50,7 +50,7 @@ coverage through multiple sources e.g. you and your spouse's employers.</p>
   <p class="lead">
     <form method="POST" enctype="multipart/form-data" data-toggle="validator" role="form" id="input_form">
         <div class="form-group">
-            <input type="email" name="email" id="email" value="{{family.email}}" placeholder="Enter your email to get started" class="form-control email-field d-inline-block form-control-lg" required/>
+            <input type="email" name="email" id="index-email-field" value="{{family.email}}" placeholder="Enter your email to get started" class="form-control d-inline-block form-control-lg" required/>
             <button class="btn btn-primary btn-lg d-inline-block" href="start{% if family %}?family={{family.key.id}} {% endif %}" role="button">Get started</button>
             <div class="help-block with-errors form-control-feedback"></div>      
         </div>
@@ -145,9 +145,9 @@ coverage through multiple sources e.g. you and your spouse's employers.</p>
             <div class="col-4 col-sm-2 text-xl-left">
                 <h6 class="text-uppercase">Legal</h6>
                 <ul class="list-unstyled">
-                    <li><a href="#" data-toggle="modal" data-target="#alertModal" >Contact Us</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#alertModal" >Privacy Policy</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#alertModal" >Terms &amp; Conditions</a></li>
+                    <li><a href="mailto:feedback@plan.guide?subject=Help%20with%20selecting%20plans">Contact Us</a></li>
+                    <li><a href="https://storage.googleapis.com/plan-selector-ninja.appspot.com/Privacy%20Policy.pdf">Privacy Policy</a></li>
+                    <li><a href="https://storage.googleapis.com/plan-selector-ninja.appspot.com/Terms%20Of%20Use.pdf">Terms &amp; Conditions</a></li>
                 </ul>
             </div>
         </div>

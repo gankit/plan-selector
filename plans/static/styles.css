@@ -121,7 +121,7 @@
     margin-bottom: 25px;
 }
 
-.email-field {
+#index-email-field {
   width: 500px;
 }
 
@@ -135,6 +135,9 @@ hr.primary {
     opacity: 1;
 }
 
+.nodecor:hover {
+  text-decoration: none;
+}
 .wide-space {
     letter-spacing: 1.6px;
 }

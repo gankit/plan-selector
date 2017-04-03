@@ -394,6 +394,7 @@ def recommendation():
         overall_text = ""
         recs = []
         overall_cost = 0
+        overall_price = 0
         option_id = ''
         for employer in split:
             is_spouse = False
@@ -405,19 +406,21 @@ def recommendation():
             cost = r_cost[employer]
             plan = get_plan_by_id(plans=plans, plan_id=plan_id)
             text = capitalize_first(get_human_readable_split(split_type, is_spouse) + " should be on the plan " + plan['plan_name'] +" offered by "+employer)
-            overall_text += "Plan for "+ get_human_readable_split(split_type, is_spouse) + " - " + plan['plan_name'] +" offered by "+ employer +" costing you $"+"{0:.2f}".format(cost)+". "
+            overall_text += "Plan for "+ get_human_readable_split(split_type, is_spouse) + " - " + plan['plan_name'] +" offered by "+ employer +" costing you $"+"{0:.2f}".format(cost)+" per year. "
             rec = {}
             rec['text'] = text
             rec['plan'] = plan
             rec['cost'] = cost
             rec['price'] = price[plan_id][split_type]
             recs.append(rec)
-            overall_cost += cost
+            overall_cost += rec['cost']
+            overall_price += rec['price']
         human_readable[util] = {}
         human_readable[util]['option_id'] = option_id
         human_readable[util]['text'] = overall_text
         human_readable[util]['recs'] = recs
         human_readable[util]['cost'] = overall_cost
+        human_readable[util]['price'] = overall_price
 
     options = {'low':[], 'med':[], 'high':[]}
     if me_employer is not None and spouse_employer is None:
@@ -439,8 +442,9 @@ def recommendation():
 
                 rec['text'] = text
                 rec['cost'] = cost
-                rec['savings'] = cost - human_readable[util]['cost']
+                rec['cost_savings'] = cost - human_readable[util]['cost']
                 rec['price'] = price[plan_id][top_coverage]
+                rec['price_savings'] = price[plan_id][top_coverage] - human_readable[util]['price']
                 options[util].append(rec)
     elif me_employer is not None and spouse_employer is not None:
         if int(family['children']) > 0 :
@@ -471,14 +475,11 @@ def recommendation():
                     rec['recommended'] = 'yes'
                 rec['text'] = text
                 rec['cost'] = cost
-                rec['savings'] = cost - human_readable[util]['cost']
+                rec['cost_savings'] = cost - human_readable[util]['cost']
                 rec['price'] = p
+                rec['price_savings'] = p - human_readable[util]['price']
                 options[util].append(rec)
-    # print(options)
-    # print(human_readable)
-    # recommendation[text, plan, cost]
-    # low_recomentation[text, cost, components=[recommendation]]
-    send_recommendation_email(family)
+    # send_recommendation_email(family)
 
     return render_template(
         "recommendation.html",
@@ -695,6 +696,7 @@ def send_plan_link_email(family, plan):
 
 def send_email(to, subject, text):
     try:
+        print('sending email with subject: '+ subject + ' to: '+to)
         url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
         auth = ('api', MAILGUN_API_KEY)
         data = {
@@ -707,6 +709,7 @@ def send_email(to, subject, text):
         response = requests.post(url, auth=auth, data=data)
         response.raise_for_status()
     except:
+        print('exception in sending email')
         return
 # @crud.route('/<id>/edit', methods=['GET', 'POST'])
 # def edit(id):

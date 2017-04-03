@@ -24,7 +24,10 @@
  <p class="lead">We are looking for the best plan combination that covers <b>you{% if family.marital_status == 'married' and family.children|int > 0 %}, your spouse and your children{% elif family.marital_status == 'married' %} and your spouse{% elif family.children|int > 0 %} and your children{% endif %}.</b></p>
 <br>
 <div class="row">
-	<div class="col-6"><h4>What is your expected healthcare utilization?</h4></div>
+	<div class="col-6">
+	<h4>What is your expected healthcare utilization?</h4>
+	<small class="text-muted">Expected healthcare utilization is the expected total price (not just that you might pay) for the upcoming year. Medium is the typical spend based on age and sex. High and Low are 75th and 25th percentile values respectively.</small>
+	</div>
 	<div class="col-6">
 		<label class="custom-control custom-radio">
 		  <input id="radio_low" name="utilization_radio" type="radio" class="custom-control-input utilization_radio"/>
@@ -32,12 +35,12 @@
 		  <span class="custom-control-description">Low</span>
 		</label>
 		<label class="custom-control custom-radio">
-		  <input id="radio_med" name="utilization_radio" type="radio" class="custom-control-input utilization_radio" checked/>
+		  <input id="radio_med" name="utilization_radio" type="radio" class="custom-control-input utilization_radio"/>
 		  <span class="custom-control-indicator"></span>
 		  <span class="custom-control-description">Medium</span>
 		</label>
 		<label class="custom-control custom-radio">
-		  <input id="radio_high" name="utilization_radio" type="radio" class="custom-control-input utilization_radio">
+		  <input id="radio_high" name="utilization_radio" type="radio" class="custom-control-input utilization_radio" checked>
 		  <span class="custom-control-indicator"></span>
 		  <span class="custom-control-description">High</span>
 		</label>
@@ -50,11 +53,12 @@
 {% for util in ['low', 'med', 'high'] %}
 <div class="recommendation-text recommendation-text-{{util}} hidden-xl-down">
 <p>{{recommendation[util].text}}</p>
+<p>We minimized the total expected costs (including premium and expected out of pocket spending) for the chosen healthcare utilization scenario. We recommend the option that minimizes costs for a given healthcare utilization. Remember that insurance is protection against the worst scenarios (even if they are not very likely - hence, we suggest that you pick the recommended plan for a 'high' utilization scenario.</p>
 </div>
 {% endfor %}
 <br>
 <div class="options-row hidden-xl-down">
-<h4>Your best options</h4>
+<h4>Other options</h4>
 </div>
 {% for util in ['low', 'med', 'high'] %}
 <div class="options options-{{util}} hidden-xl-down">
@@ -62,9 +66,10 @@
   <thead>
     <tr>
       <th>Option</th>
-      <th>Price</th>
-      <th>Expected Cost</th>
-      <th>Saving</th>
+      <th><a href="#" data-toggle="tooltip" title="" data-original-title="Your total annual premium less any contribution your employer is making toward money account and bonuses" class="nodecor">Net Annual Price</a></th>
+      <th><a href="#" data-toggle="tooltip" title="" data-original-title="Likely out of pocket expenses (including premium) that you will incur for this expected healthcare usage" class="nodecor">Expected Costs</a></th>
+      <th><a href="#" data-toggle="tooltip" title="" data-original-title="Amount you save in premium for this option relative to other options" class="nodecor">Savings On Price</a></th>
+      <th><a href="#" data-toggle="tooltip" title="" data-original-title="Total dollars saved by picking the recommended option relative to other options for this expected healthcare usage" class="nodecor">Savings On Expected Cost</a></th>
     </tr>
   </thead>
   <tbody>
@@ -73,7 +78,8 @@
       <td>{{option.text}}</td>
       <td>${{option.price|round(2, 'ceil')}}</td>
       <td>${{option.cost|round(2, 'ceil')}}</td>
-      <td>{% if option.savings == 0 %} N/A {% else %} ${{option.savings|round(2, 'ceil')}} {% endif %}</td>
+      <td>{% if option.price_savings == 0 %} N/A {% else %} ${{option.price_savings|round(2, 'ceil')}} {% endif %}</td>
+      <td>{% if option.cost_savings == 0 %} N/A {% else %} ${{option.cost_savings|round(2, 'ceil')}} {% endif %}</td>
     </tr>
 {% endfor %}    
   </tbody>
@@ -85,6 +91,10 @@
 <script type="text/javascript">
 
   $(document).ready(function() {
+
+	$(function () {
+	  $('[data-toggle="tooltip"]').tooltip()
+	})
 
     $('.options-table').DataTable({
     	searching: false,
