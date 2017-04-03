@@ -487,7 +487,7 @@ def recommendation():
                 rec['price'] = p
                 rec['price_savings'] = p - human_readable[util]['price']
                 options[util].append(rec)
-    # send_recommendation_email(family)
+    send_recommendation_email(family)
 
     return render_template(
         "recommendation.html",
