@@ -13,35 +13,43 @@
 # limitations under the License.
 
 from plans import get_model
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for, make_response
 import logging
 import json
 import urllib.request
 import requests
+import os
+
+GA_TRACKING_ID = os.environ['GA_TRACKING_ID']
 
 crud = Blueprint('crud', __name__)
 # [START index]
 @crud.route("/", methods=['GET', 'POST'])
 def index():
     family_id = request.args.get('family', None)
+    family = None
+    family_from_cookie = None
     if family_id:
         family_id = family_id.encode('utf-8')
-
-    family = get_model().item('Family', id=family_id)
+        family = get_model().item('Family', id=family_id)
+    else:
+        family_id_from_cookie = request.cookies.get('family_id_cookie')
+        if family_id_from_cookie:
+            family_from_cookie = get_model().item('Family', id=family_id_from_cookie)
 
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
-        print(data)
-        print(family)
         if family:
             return redirect(url_for('.start', family=family_id))
         else:
             #create a family
             family = get_model().update('Family', data=data, id=None)
-            return redirect(url_for('.start', family=family['id']))
+            resp = make_response(redirect(url_for('.start', family=family['id'])))
+            resp.set_cookie('family_id_cookie', str(family['id']).encode('utf-8'))
+            return resp
 
     else:    
-        return render_template("index.html", family=family)
+        return render_template("index.html", family=family, family_from_cookie=family_from_cookie)
 # [END index]
 
 @crud.route("/start", methods=['GET', 'POST'])
@@ -729,6 +737,29 @@ def send_email(to, subject, text):
     except:
         print('exception in sending email')
         return
+
+def track_event(category, action, label=None, value=0):
+    data = {
+        'v': '1',  # API Version.
+        'tid': GA_TRACKING_ID,  # Tracking ID / Property ID.
+        # Anonymous Client Identifier. Ideally, this should be a UUID that
+        # is associated with particular user, device, or browser instance.
+        'cid': '555',
+        't': 'event',  # Event hit type.
+        'ec': category,  # Event category.
+        'ea': action,  # Event action.
+        'el': label,  # Event label.
+        'ev': value,  # Event value, must be an integer
+    }
+
+    response = requests.post(
+        'http://www.google-analytics.com/collect', data=data)
+
+    # If the request fails, this will raise a RequestException. Depending
+    # on your application's needs, this may be a non-error and can be caught
+    # by the caller.
+    response.raise_for_status()
+
 # @crud.route('/<id>/edit', methods=['GET', 'POST'])
 # def edit(id):
 #     book = get_model().read(id)

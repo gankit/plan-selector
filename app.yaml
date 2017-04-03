@@ -30,6 +30,8 @@ automatic_scaling:
   cpu_utilization:
     target_utilization: 0.75
 
+env_variables:
+    GA_TRACKING_ID: UA-265146-4
 #[START cloudsql_settings]
 beta_settings:
     # If using Cloud SQL, uncomment and set this value to the Cloud SQL

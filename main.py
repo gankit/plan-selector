@@ -15,9 +15,7 @@
 import plans
 import config
 
-
 app = plans.create_app(config)
-
 
 # This is only used when running locally. When running live, gunicorn runs
 # the application.
