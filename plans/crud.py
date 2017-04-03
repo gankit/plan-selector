@@ -44,6 +44,7 @@ def index():
         else:
             #create a family
             family = get_model().update('Family', data=data, id=None)
+            send_welcome_email(family)
             resp = make_response(redirect(url_for('.start', family=family['id'])))
             resp.set_cookie('family_id_cookie', str(family['id']).encode('utf-8'))
             return resp
@@ -63,6 +64,7 @@ def start():
         if 'save' in request.form:
             return redirect(url_for('.start', family=family['id']))
         else:
+            send_welcome_email(family)
             return redirect(url_for('.plans', family=family['id']))
 
     family_id = request.args.get('family', None)
@@ -78,10 +80,7 @@ def start():
     # Edge case when an incorrect family_id is supplied
     if not family and family_id:
         return redirect(url_for('.index'))
-    
-    if family:
-        send_welcome_email(family)
-    
+        
     return render_template("start.html", family=family)
 
 # [END start]
@@ -102,8 +101,6 @@ def plans():
     # When family information is incomplete
     if not ('me_age' in family) and family_id:
         return redirect(url_for('.start', family=family_id))
-
-    print(family)
 
     display_coverage_type = 'ee'
     display_coverage_type_text = 'yourself'
@@ -487,14 +484,20 @@ def recommendation():
                 rec['price'] = p
                 rec['price_savings'] = p - human_readable[util]['price']
                 options[util].append(rec)
-    send_recommendation_email(family)
-
-    return render_template(
+    
+    resp = make_response(render_template(
         "recommendation.html",
         family=family,
         plans=plans,
         recommendation=human_readable,
-        options=options)
+        options=options))
+
+    sent_recommendation = request.cookies.get('sent_recommendation')
+    if not sent_recommendation:
+        success = send_recommendation_email(family)
+        if success:
+            resp.set_cookie('sent_recommendation', 'yes')
+    return resp
 # [END recommendation]
 
 # [START glossary]
@@ -681,7 +684,7 @@ def send_welcome_email(family):
     text += "\n"
     text += "The Plan Guide Team"
     text += "\n"
-    send_email(to=family['email'], subject=subject, text=text)
+    return send_email(to=family['email'], subject=subject, text=text)
 
 def send_recommendation_email(family):
     print(family)
@@ -700,7 +703,7 @@ def send_recommendation_email(family):
     text += "\n"
     text += "The Plan Guide Team"
     text += "\n"
-    send_email(to=family['email'], subject=subject, text=text)
+    return send_email(to=family['email'], subject=subject, text=text)
 
 def send_plan_link_email(family, plan):
     subject = 'Plan Guide: Pick up where you left ...'
@@ -718,11 +721,10 @@ def send_plan_link_email(family, plan):
     text += "\n"
     text += "The Plan Guide Team"
     text += "\n"
-    send_email(to=family['email'], subject=subject, text=text)
+    return send_email(to=family['email'], subject=subject, text=text)
 
 def send_email(to, subject, text):
     try:
-        print('sending email with subject: '+ subject + ' to: '+to)
         url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
         auth = ('api', MAILGUN_API_KEY)
         data = {
@@ -736,7 +738,8 @@ def send_email(to, subject, text):
         response.raise_for_status()
     except:
         print('exception in sending email')
-        return
+        return False
+    return True
 
 def track_event(category, action, label=None, value=0):
     data = {
