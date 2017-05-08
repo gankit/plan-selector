@@ -277,6 +277,10 @@ def recommendation():
                 me_employer = employer
             elif plan['plan_source'] == 'spouse_employer':
                 spouse_employer = employer
+            elif plan['plan_source'] == 'other':
+                employer = plan['plan_source_other']
+                plan['employer_name'] = employer
+                me_employer = employer
 
             if employer not in comparison_table:
                 comparison_table[employer] = {}
@@ -287,7 +291,7 @@ def recommendation():
                     comparison_table[employer][coverage_type][plan_id] = {}
                 utilization = {}
                 if coverage_type == 'ee':
-                    if plan['plan_source'] == 'employer':
+                    if plan['plan_source'] == 'employer' or plan['plan_source'] == 'other':
                         age = str(family['me_age'])
                         gender = str(family['me_gender'])
                         utilization = expected_utilization(data=utilization_dataset, age=age, gender=gender)
@@ -307,7 +311,7 @@ def recommendation():
                         utilization[util] = utilization_1[util] + utilization_2[util]
                 if coverage_type == 'ee_children':
                     utilization_1 = {}
-                    if plan['plan_source'] == 'employer':
+                    if plan['plan_source'] == 'employer' or plan['plan_source'] == 'other':
                         age = str(family['me_age'])
                         gender = str(family['me_gender'])
                         utilization_1 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
@@ -328,7 +332,7 @@ def recommendation():
                     utilization_3 = expected_utilization(data=utilization_dataset, age=age, gender=gender)
                     for util in utilization_1:
                         utilization[util] = utilization_1[util] + int(family['children'])*utilization_2[util] + utilization_3[util]
-                # print(utilization)
+                print(utilization)
                 comparison_table[employer][coverage_type][plan_id] = utilization
                 for util in utilization:
                     cost = 0
@@ -343,7 +347,7 @@ def recommendation():
                     cost = price[plan_id][coverage_type] + xyz
                     comparison_table[employer][coverage_type][plan_id][util] = cost
 
-        # print(comparison_table)
+        print(comparison_table)
         best_plans = {'low':{}, 'med':{}, 'high':{}}
         for coverage_type in coverage_types:
             if coverage_type not in best_plans['low']:
@@ -358,7 +362,7 @@ def recommendation():
                             min_cost[util] = cost
                             best_plans[util][coverage_type][employer] = plan_id
 
-        # print(best_plans)
+        print(best_plans)
         recommended_plans = {'low':{}, 'med':{}, 'high':{}}
         recommended_plans_cost = {'low':{}, 'med':{}, 'high':{}}
         recommended_coverage_split = {'low':{}, 'med':{}, 'high':{}}
